@@ -60,12 +60,11 @@ class RNNModel(nn.Module):
     def reset(self):
         if self.rnn_type == 'QRNN': [r.reset() for r in self.rnns]
 
-    def run_lstmcell(self, rnnmodel, input):
+    def run_lstmcell(self, rnnmodel, input, hidden):
         print input.size()
         #print hidden[0]
-        hx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
-        cx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
-        print hx.size(), cx.size()
+        hx, cx = hidden
+        #print hx.size(), cx.size()
         #input = input.transpose(0, 1)
         for j in range(input.size(0)):
             print input[j].size()
@@ -79,7 +78,13 @@ class RNNModel(nn.Module):
         self.decoder.bias.data.fill_(0)
         self.decoder.weight.data.uniform_(-initrange, initrange)
 
-    def forward(self, input, return_h=False):
+    def init_hidden(self):
+        hx = Variable(torch.zeros()).cuda()
+        cx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
+
+        return hx, cx
+
+    def forward(self, input, hidden, return_h=False):
         emb = embedded_dropout(self.encoder, input, dropout=self.dropoute if self.training else 0)
         #emb = self.idrop(emb)
 
@@ -93,7 +98,7 @@ class RNNModel(nn.Module):
         for l, rnn in enumerate(self.rnns):
             current_input = raw_output
             #print rnn
-            raw_output, new_h = self.run_lstmcell(rnn, raw_output)
+            raw_output, new_h = self.run_lstmcell(rnn, raw_output, hidden[l])
             del(rnn)
             new_hidden.append(new_h)
             raw_outputs.append(raw_output)
@@ -115,8 +120,8 @@ class RNNModel(nn.Module):
     def init_hidden(self, bsz):
         weight = next(self.parameters()).data
         if self.rnn_type == 'LSTM':
-            return [(Variable(weight.new(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()),
-                    Variable(weight.new(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()))
+            return [(Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))),
+                    Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))))
                     for l in range(self.nlayers)]
             # return [(Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()),
             #         Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()))
