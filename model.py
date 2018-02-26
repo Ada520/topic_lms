@@ -60,11 +60,11 @@ class RNNModel(nn.Module):
     def reset(self):
         if self.rnn_type == 'QRNN': [r.reset() for r in self.rnns]
 
-    def run_lstmcell(self, rnnmodel, input, hidden):
+    def run_lstmcell(self, rnnmodel, input, hdn):
         print input.size()
         #print hidden[0]
-        print hidden
-        hx, cx = hidden
+        print hdn
+        hx, cx = hdn
         #hx_all = Variable(input.size(0), input.size(1), )
         hx_all = []
         cx_all = []
