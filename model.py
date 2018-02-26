@@ -106,7 +106,7 @@ class RNNModel(nn.Module):
                 raw_output = self.lockdrop(raw_output, self.dropouth)
                 outputs.append(raw_output)
         #hidden = new_hidden
-        hidden = new_hidden
+        hidden = raw_outputs[-1], new_hidden
 
         output = self.lockdrop(raw_output, self.dropout)
         outputs.append(output)
