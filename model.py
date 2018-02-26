@@ -63,8 +63,9 @@ class RNNModel(nn.Module):
     def run_lstmcell(self, rnnmodel, input, hdn):
         print input.size()
         #print hidden[0]
-        print hdn
+        #print hdn
         hx, cx = hdn
+        print hx
         #hx_all = Variable(input.size(0), input.size(1), )
         hx_all = []
         cx_all = []
@@ -75,6 +76,8 @@ class RNNModel(nn.Module):
             hx, cx = rnnmodel(input[j], (hx, cx))
             hx_all.append(hx)
             cx_all.append(cx)
+
+        print hx
         return torch.stack(hx_all), torch.stack(cx_all)
 
     def init_weights(self):
