@@ -60,9 +60,9 @@ class RNNModel(nn.Module):
     def reset(self):
         if self.rnn_type == 'QRNN': [r.reset() for r in self.rnns]
 
-    def run_lstmcell(self, rnnmodel, input, hidden):
+    def run_lstmcell(self, rnnmodel, input):
         print input.size()
-        print hidden[0]
+        #print hidden[0]
         hx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
         cx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
         #input = input.transpose(0, 1)
