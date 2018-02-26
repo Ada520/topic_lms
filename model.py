@@ -75,7 +75,7 @@ class RNNModel(nn.Module):
             hx, cx = rnnmodel(input[j], (hx, cx))
             hx_all.append(hx)
             cx_all.append(cx)
-        return torch.stack(hx_all), torch.stack(cx_all)
+        return torch.stack(hx_all), cx
 
     def init_weights(self):
         initrange = 0.1
@@ -105,6 +105,7 @@ class RNNModel(nn.Module):
                 #self.hdrop(raw_output)
                 raw_output = self.lockdrop(raw_output, self.dropouth)
                 outputs.append(raw_output)
+        #hidden = new_hidden
         hidden = new_hidden
 
         output = self.lockdrop(raw_output, self.dropout)
