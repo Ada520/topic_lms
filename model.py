@@ -65,8 +65,10 @@ class RNNModel(nn.Module):
         #print hidden[0]
         hx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
         cx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
+        print hx.size(), cx.size()
         #input = input.transpose(0, 1)
         for j in range(input.size(0)):
+            print input[j].size()
             hx, cx = rnnmodel(input[j], (hx, cx))
 
         return hx, cx
