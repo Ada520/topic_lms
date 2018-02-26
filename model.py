@@ -67,7 +67,7 @@ class RNNModel(nn.Module):
         #print hx.size(), cx.size()
         #input = input.transpose(0, 1)
         for j in range(input.size(0)):
-            print input[j].size()
+            #print input[j].size()
             hx, cx = rnnmodel(input[j], (hx, cx))
 
         return hx, cx
@@ -120,8 +120,8 @@ class RNNModel(nn.Module):
     def init_hidden(self, bsz):
         weight = next(self.parameters()).data
         if self.rnn_type == 'LSTM':
-            return [(Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))),
-                    Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))))
+            return [(Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))).cuda(),
+                    Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))).cuda())
                     for l in range(self.nlayers)]
             # return [(Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()),
             #         Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()))
