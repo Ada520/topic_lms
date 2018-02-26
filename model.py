@@ -73,19 +73,13 @@ class RNNModel(nn.Module):
             hx, cx = rnnmodel(input[j], (hx, cx))
             hx_all.append(hx)
             cx_all.append(cx)
-        return hx_all, cx_all
+        return torch.FloatTensor(hx_all), torch.FloatTensor(cx_all)
 
     def init_weights(self):
         initrange = 0.1
         self.encoder.weight.data.uniform_(-initrange, initrange)
         self.decoder.bias.data.fill_(0)
         self.decoder.weight.data.uniform_(-initrange, initrange)
-
-    def init_hidden(self):
-        hx = Variable(torch.zeros()).cuda()
-        cx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
-
-        return hx, cx
 
     def forward(self, input, hidden, return_h=False):
         emb = embedded_dropout(self.encoder, input, dropout=self.dropoute if self.training else 0)
