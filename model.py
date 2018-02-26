@@ -62,6 +62,7 @@ class RNNModel(nn.Module):
 
     def run_lstmcell(self, rnnmodel, input, hidden):
         print input.size()
+        print hidden.size()
         hx, cx = torch.squeeze(hidden, 0)
         input = input.transpose(0, 1)
         for j in range(input.size(0)):
