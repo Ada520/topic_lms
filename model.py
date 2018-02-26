@@ -65,7 +65,7 @@ class RNNModel(nn.Module):
         #print hidden[0]
         #print hdn
         hx, cx = hdn
-        print hx
+        #print hx
         #hx_all = Variable(input.size(0), input.size(1), )
         hx_all = []
         cx_all = []
@@ -77,7 +77,7 @@ class RNNModel(nn.Module):
             hx_all.append(hx)
             cx_all.append(cx)
 
-        print hx
+        #print hx
         return torch.stack(hx_all), torch.stack(cx_all)
 
     def init_weights(self):
