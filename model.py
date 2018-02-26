@@ -64,13 +64,16 @@ class RNNModel(nn.Module):
         print input.size()
         #print hidden[0]
         hx, cx = hidden
+        hx_all = []
+        cx_all = []
         #print hx.size(), cx.size()
         #input = input.transpose(0, 1)
         for j in range(input.size(0)):
             #print input[j].size()
             hx, cx = rnnmodel(input[j], (hx, cx))
-
-        return hx, cx
+            hx_all.append(hx)
+            cx_all.append(cx)
+        return hx_all, cx_all
 
     def init_weights(self):
         initrange = 0.1
