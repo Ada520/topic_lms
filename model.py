@@ -63,8 +63,9 @@ class RNNModel(nn.Module):
     def run_lstmcell(self, rnnmodel, input, hidden):
         print input.size()
         print hidden[0]
-        hx, cx = hidden
-        input = input.transpose(0, 1)
+        hx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
+        cx = Variable(torch.zeros(input.size(1), input.size(2))).cuda()
+        #input = input.transpose(0, 1)
         for j in range(input.size(0)):
             hx, cx = rnnmodel(input[j], (hx, cx))
 
@@ -76,7 +77,7 @@ class RNNModel(nn.Module):
         self.decoder.bias.data.fill_(0)
         self.decoder.weight.data.uniform_(-initrange, initrange)
 
-    def forward(self, input, hidden, return_h=False):
+    def forward(self, input, return_h=False):
         emb = embedded_dropout(self.encoder, input, dropout=self.dropoute if self.training else 0)
         #emb = self.idrop(emb)
 
@@ -90,7 +91,7 @@ class RNNModel(nn.Module):
         for l, rnn in enumerate(self.rnns):
             current_input = raw_output
             #print rnn
-            raw_output, new_h = self.run_lstmcell(rnn, raw_output, hidden[l])
+            raw_output, new_h = self.run_lstmcell(rnn, raw_output)
             
             new_hidden.append(new_h)
             raw_outputs.append(raw_output)

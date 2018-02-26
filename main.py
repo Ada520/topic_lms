@@ -144,7 +144,7 @@ def train():
         #print hidden
         optimizer.zero_grad()
 
-        output, hidden, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
+        output, hidden, rnn_hs, dropped_rnn_hs = model(data, return_h=True)
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
         loss = raw_loss
