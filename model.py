@@ -60,6 +60,15 @@ class RNNModel(nn.Module):
     def reset(self):
         if self.rnn_type == 'QRNN': [r.reset() for r in self.rnns]
 
+    def run_lstmcell(self, rnnmodel, input, hidden):
+        print input.size()
+        hx, cx = torch.squeeze(hidden, 0)
+        input = input.transpose(0, 1)
+        for j in range(input.size(0)):
+            hx, cx = rnnmodel(input[j], (hx, cx))
+
+        return hx, cx
+
     def init_weights(self):
         initrange = 0.1
         self.encoder.weight.data.uniform_(-initrange, initrange)
