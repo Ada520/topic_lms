@@ -63,6 +63,7 @@ class RNNModel(nn.Module):
     def run_lstmcell(self, rnnmodel, input, hidden):
         print input.size()
         #print hidden[0]
+        print hidden.size()
         hx, cx = hidden
         #hx_all = Variable(input.size(0), input.size(1), )
         hx_all = []
