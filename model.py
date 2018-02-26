@@ -94,7 +94,7 @@ class RNNModel(nn.Module):
             current_input = raw_output
             #print rnn
             raw_output, new_h = self.run_lstmcell(rnn, raw_output)
-            
+            del(rnn)
             new_hidden.append(new_h)
             raw_outputs.append(raw_output)
             if l != self.nlayers - 1:
