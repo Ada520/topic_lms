@@ -62,7 +62,7 @@ class RNNModel(nn.Module):
 
     def run_lstmcell(self, rnnmodel, input, hidden):
         print input.size()
-        print hidden
+        print hidden[0]
         hx, cx = hidden
         input = input.transpose(0, 1)
         for j in range(input.size(0)):
