@@ -64,7 +64,7 @@ class RNNModel(nn.Module):
         print input.size()
         #print hidden[0]
         hx, cx = hidden
-        hx_all = []
+        hx_all = Variable(input.size(0), input.size(1), )
         cx_all = []
         #print hx.size(), cx.size()
         #input = input.transpose(0, 1)
@@ -73,7 +73,7 @@ class RNNModel(nn.Module):
             hx, cx = rnnmodel(input[j], (hx, cx))
             hx_all.append(hx)
             cx_all.append(cx)
-        return torch.FloatTensor(hx_all), torch.FloatTensor(cx_all)
+        return torch.stack(hx_all), torch.stack(cx_all)
 
     def init_weights(self):
         initrange = 0.1
