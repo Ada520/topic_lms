@@ -64,7 +64,8 @@ class RNNModel(nn.Module):
         print input.size()
         #print hidden[0]
         hx, cx = hidden
-        hx_all = Variable(input.size(0), input.size(1), )
+        #hx_all = Variable(input.size(0), input.size(1), )
+        hx_all = []
         cx_all = []
         #print hx.size(), cx.size()
         #input = input.transpose(0, 1)
