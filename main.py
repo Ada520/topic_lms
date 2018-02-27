@@ -235,9 +235,9 @@ except KeyboardInterrupt:
 # Load the best saved model.
 del(model)
 import model
-with open(args.save, 'rb') as f:
-    model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
-    model.load_state_dict(f)
+#with open(args.save, 'rb') as f:
+model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
+model.load_state_dict(args.save)
 
 # Run on test data.
 test_loss = evaluate(test_data, test_batch_size)
