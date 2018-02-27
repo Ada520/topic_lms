@@ -102,6 +102,7 @@ criterion = nn.CrossEntropyLoss()
 # Training code
 ###############################################################################
 
+
 def evaluate(data_source, batch_size=10):
     # Turn on evaluation mode which disables dropout.
     model.eval()
@@ -181,6 +182,7 @@ stored_loss = 100000000
 # At any point you can hit Ctrl + C to break out of training early.
 try:
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.wdecay)
+    #optimizer = torch.optim.Adam()
     for epoch in range(1, args.epochs+1):
         epoch_start_time = time.time()
         train()
@@ -232,7 +234,8 @@ except KeyboardInterrupt:
 
 # Load the best saved model.
 with open(args.save, 'rb') as f:
-    model = torch.load(f)
+    model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
+    model.load_state_dict(f)
 
 # Run on test data.
 test_loss = evaluate(test_data, test_batch_size)
