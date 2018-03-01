@@ -5,6 +5,7 @@ from torch.autograd import Variable
 from embed_regularize import embedded_dropout
 from locked_dropout import LockedDropout
 from weight_drop import WeightDrop
+from LSTM_topic import LSTMCell
 
 class RNNModel(nn.Module):
     """Container module with an encoder, a recurrent module, and a decoder."""
@@ -18,7 +19,7 @@ class RNNModel(nn.Module):
         self.encoder = nn.Embedding(ntoken, ninp)
         assert rnn_type in ['LSTM', 'QRNN', 'GRU'], 'RNN type is not supported'
         if rnn_type == 'LSTM':
-            self.rnns = [torch.nn.LSTMCell(ninp if l == 0 else nhid, nhid if l != nlayers - 1 else (ninp if tie_weights else nhid), bias=True) for l in range(nlayers)]
+            self.rnns = [LSTMCell(ninp if l == 0 else nhid, nhid if l != nlayers - 1 else (ninp if tie_weights else nhid), bias=True) for l in range(nlayers)]
             #if wdrop:
             #    self.rnns = [WeightDrop(rnn, ['weight_hh_l0'], dropout=wdrop) for rnn in self.rnns]
         if rnn_type == 'GRU':
