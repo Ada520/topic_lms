@@ -45,7 +45,7 @@ def LSTMCell_func(input, hidden, w_ih, w_hh, b_ih=None, b_hh=None, topic=None, t
 
     cy = (forgetgate * cx) + (ingate * cellgate)
     hy = outgate * F.tanh(cy)
-    hy = drop(hy)
+    #hy = drop(hy)
 
     return hy, cy
 

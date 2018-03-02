@@ -31,7 +31,7 @@ class RNNModel(nn.Module):
             self.rnns = [QRNNLayer(input_size=ninp if l == 0 else nhid, hidden_size=nhid if l != nlayers - 1 else (ninp if tie_weights else nhid), save_prev_x=True, zoneout=0, window=2 if l == 0 else 1, output_gate=True) for l in range(nlayers)]
             for rnn in self.rnns:
                 rnn.linear = WeightDrop(rnn.linear, ['weight'], dropout=wdrop)
-        print(self.rnns)
+        #print(self.rnns)
         self.rnns = torch.nn.ModuleList(self.rnns)
         self.decoder = nn.Linear(nhid, ntoken)
 
@@ -124,7 +124,7 @@ class RNNModel(nn.Module):
     def init_hidden(self, bsz):
         weight = next(self.parameters()).data
         if self.rnn_type == 'LSTM':
-            return [(Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))).cuda(),
+            return [(Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).cuda()),
                     Variable(torch.zeros(bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid))).cuda())
                     for l in range(self.nlayers)]
             # return [(Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_()),

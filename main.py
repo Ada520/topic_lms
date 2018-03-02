@@ -48,7 +48,7 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--nonmono', type=int, default=5,
                     help='random seed')
-parser.add_argument('--cuda', action='store_false',
+parser.add_argument('--cuda', action='store_false', default=True,
                     help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
@@ -76,7 +76,8 @@ if torch.cuda.is_available():
 # Load data
 ###############################################################################
 
-corpus = data.Corpus(args.data)
+
+#corpus = data.Corpus(args.data)
 file_path = 'data_py2.pkl'
 
 eval_batch_size = 10
@@ -88,14 +89,15 @@ with open(file_path, 'rb') as f:
 
 #train_data = batchify(corpus.train, args.batch_size, args)
 
-val_data = batchify(corpus.valid, eval_batch_size, args)
-test_data = batchify(corpus.test, test_batch_size, args)
+#val_data = batchify(corpus.valid, eval_batch_size, args)
+#test_data = batchify(corpus.test, test_batch_size, args)
 
 ###############################################################################
 # Build the model
 ###############################################################################
 
-ntokens = len(corpus.dictionary)
+#ntokens = len(corpus.dictionary)
+ntokens = 100000
 model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 if args.cuda:
     model.cuda()
@@ -131,27 +133,31 @@ def train():
     if args.model == 'QRNN': model.reset()
     total_loss = 0
     start_time = time.time()
-    ntokens = len(corpus.dictionary)
+    #ntokens = len(corpus.dictionary)
+    ntokens = 100000
     hidden = model.init_hidden(args.batch_size)
     seq_len = 35
     #batch, i = 0, 0
     #while i < train_data.size(0) - 1 - 1:
-    for batch_n in range(args.batch_size):
+    for batch_n in range(0, args.batch_size):
         #from_index = batch_n * seq_len
         #to_index = (batch_n + 1) * seq_len
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         # Prevent excessively small or negative sequence lengths
-        seq_len = max(5, int(np.random.normal(bptt, 5)))
+        #seq_len = max(5, int(np.random.normal(bptt, 5)))
         # There's a very small chance that it could select a very long sequence length resulting in OOM
         # seq_len = min(seq_len, args.bptt + 10)
 
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         model.train()
-        data = Variable(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])
-        targets = Variable(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1])
+        data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
+        targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
+        #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
-        print data.size()
+        #print data.size()
+        #print data
+        print targets
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
@@ -159,7 +165,8 @@ def train():
         #print hidden
         optimizer.zero_grad()
 
-        output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
+        output, rnn_hs, dropped_rnn_hs = model(data,hidden, return_h=True)
+        print output.size(), targets.size()
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
         loss = raw_loss
@@ -175,18 +182,18 @@ def train():
 
         total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
-        if batch % args.log_interval == 0 and batch > 0:
+        if batch_n % args.log_interval == 0 and batch_n > 0:
             cur_loss = total_loss[0] / args.log_interval
             elapsed = time.time() - start_time
             print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
-                epoch, batch, len(train_data) // args.bptt, optimizer.param_groups[0]['lr'],
+                epoch, batch_n, len(train_data) // args.bptt, optimizer.param_groups[0]['lr'],
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
         ###
-        batch += 1
-        i += seq_len
+        #batch += 1
+        #i += seq_len
 
 # Loop over epochs.
 lr = args.lr
