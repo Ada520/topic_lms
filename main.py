@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-
+import pickle
 import data
 import model
 
@@ -28,7 +28,7 @@ parser.add_argument('--clip', type=float, default=0.25,
                     help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=8000,
                     help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=80, metavar='N',
+parser.add_argument('--batch_size', type=int, default=20, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=70,
                     help='sequence length')
@@ -77,11 +77,16 @@ if torch.cuda.is_available():
 ###############################################################################
 
 corpus = data.Corpus(args.data)
-
+file_path = 'data_py2.pkl'
 
 eval_batch_size = 10
 test_batch_size = 1
-train_data = batchify(corpus.train, args.batch_size, args)
+
+with open(file_path, 'rb') as f:
+    train_data = pickle.load(f)
+
+
+#train_data = batchify(corpus.train, args.batch_size, args)
 
 val_data = batchify(corpus.valid, eval_batch_size, args)
 test_data = batchify(corpus.test, test_batch_size, args)
@@ -128,8 +133,12 @@ def train():
     start_time = time.time()
     ntokens = len(corpus.dictionary)
     hidden = model.init_hidden(args.batch_size)
-    batch, i = 0, 0
-    while i < train_data.size(0) - 1 - 1:
+    seq_len = 35
+    #batch, i = 0, 0
+    #while i < train_data.size(0) - 1 - 1:
+    for batch_n in range(args.batch_size):
+        #from_index = batch_n * seq_len
+        #to_index = (batch_n + 1) * seq_len
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         # Prevent excessively small or negative sequence lengths
         seq_len = max(5, int(np.random.normal(bptt, 5)))
@@ -139,7 +148,9 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         model.train()
-        data, targets = get_batch(train_data, i, args, seq_len=seq_len)
+        data = Variable(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])
+        targets = Variable(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1])
+        #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         print data.size()
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
