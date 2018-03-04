@@ -35,7 +35,7 @@ def LSTMCell_func(input, hidden, w_ih, w_hh, b_ih=None, b_hh=None, topic=None, t
     ingate, forgetgate, cellgate, outgate = gates.chunk(4, 1)
     #print topic.size(), topic_i_w.size(), ingate.size()
     #ingate = F.sigmoid(ingate + F.linear(topic, topic_i_w))
-    print ingate.size()
+    print(ingate.size())
     ingate = F.sigmoid(ingate)
 
     #forgetgate = F.sigmoid(forgetgate + F.linear(topic, topic_f_w))
