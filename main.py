@@ -78,14 +78,14 @@ if torch.cuda.is_available():
 
 
 #corpus = data.Corpus(args.data)
-file_path = 'data_py2.pkl'
+# file_path = 'data_py2.pkl'
+file_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_train_py2.pkl'
 
 eval_batch_size = 10
 test_batch_size = 1
 
 with open(file_path, 'rb') as f:
     train_data = pickle.load(f)
-
 
 #train_data = batchify(corpus.train, args.batch_size, args)
 
@@ -97,7 +97,8 @@ with open(file_path, 'rb') as f:
 ###############################################################################
 
 #ntokens = len(corpus.dictionary)
-ntokens = 100000
+# ntokens = 100000
+ntokens = 10566
 model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 if args.cuda:
     model.cuda()
