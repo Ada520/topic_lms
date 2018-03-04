@@ -11,7 +11,7 @@ import data
 import model
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 
 from utils import batchify, get_batch, repackage_hidden
 
@@ -134,6 +134,7 @@ def evaluate(data_source, batch_size=10):
     n_batches = (batch_len -1) // seq_len
 
     for batch_n in range(n_batches):
+        print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
 
