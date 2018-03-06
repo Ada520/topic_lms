@@ -99,6 +99,7 @@ with open(train_path, 'rb') as f:
 with open(valid_path, 'rb') as f:
     valid_data = pickle.load(f)
 
+print valid_data
 #train_data = batchify(corpus.train, args.batch_size, args)
 
 #val_data = batchify(corpus.valid, eval_batch_size, args)
@@ -135,12 +136,12 @@ def evaluate(valid_data, batch_size=10):
     hidden = model.init_hidden(args.batch_size)
     _, batch_len = valid_data.shape
     n_batches = (batch_len -1) // seq_len
-
+    print n_batches
     for batch_n in range(n_batches):
         #print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-        #print data.size(), targets.size()
+        print data
         #print "evaluating!"
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
