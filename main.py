@@ -141,7 +141,7 @@ def evaluate(valid_data, batch_size=10):
         #print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-        print data
+        print len(data), len(targets)
         #print "evaluating!"
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
