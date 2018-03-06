@@ -127,7 +127,8 @@ criterion = nn.CrossEntropyLoss()
 
 def evaluate(valid_data, batch_size=10):
     print("EVALUATION")
-
+    # Turn on evaluation mode which disables dropout.
+    model.eval()
     if args.model == 'QRNN': model.reset()
     total_loss = 0
     #ntokens = len(corpus.dictionary)
@@ -140,10 +141,8 @@ def evaluate(valid_data, batch_size=10):
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
         print data.size(), targets.size()
-        # Turn on evaluation mode which disables dropout.
-        model.eval()
-        print "evaluating!"
-        output = model(data, hidden, return_h=False)
+        #print "evaluating!"
+        output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
@@ -254,6 +253,7 @@ try:
 
         else:
             val_loss = evaluate(valid_data, eval_batch_size)
+            print val_loss
             print('-' * 89)
             print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
                     'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
