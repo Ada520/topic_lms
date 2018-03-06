@@ -125,13 +125,13 @@ criterion = nn.CrossEntropyLoss()
 ###############################################################################
 
 
-def evaluate(data_source, batch_size=20):
+def evaluate(data_source, batch_size=10):
     print("EVALUATION")
 
     if args.model == 'QRNN': model.reset()
     total_loss = 0
     #ntokens = len(corpus.dictionary)
-    hidden = model.init_hidden(batch_size)
+    hidden = model.init_hidden(args.batch_size)
     _, batch_len = valid_data.shape
     n_batches = (batch_len -1) // seq_len
 
