@@ -1,5 +1,5 @@
 import argparse
-import ipdb
+#import ipdb
 import time
 import math
 import numpy as np
@@ -124,8 +124,7 @@ criterion = nn.CrossEntropyLoss()
 
 def evaluate(data_source, batch_size=10):
     print("EVALUATION")
-    # Turn on evaluation mode which disables dropout.
-    model.eval()
+
     if args.model == 'QRNN': model.reset()
     total_loss = 0
     #ntokens = len(corpus.dictionary)
@@ -137,8 +136,10 @@ def evaluate(data_source, batch_size=10):
         print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-
-        output = model(data, hidden)
+        print data.size(), targets.size()
+        # Turn on evaluation mode which disables dropout.
+        model.eval()
+        output = model(data, hidden, return_h=False)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
