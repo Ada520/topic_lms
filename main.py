@@ -144,7 +144,7 @@ def evaluate(valid_data, batch_size=10):
         #print "evaluating!"
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
-        total_loss += len(data) * criterion(output_flat, targets).data
+        total_loss += criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
     return total_loss[0] / len(valid_data)
 
