@@ -84,13 +84,16 @@ if torch.cuda.is_available():
 seq_len = 35
 #corpus = data.Corpus(args.data)
 #file_path = 'data_py2.pkl'
-file_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_train_py2.pkl'
-valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
+#train_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_train_py2.pkl'
+train_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_train_py2.pkl'
+#valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
+valid_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl'
+
 
 eval_batch_size = 10
 test_batch_size = 1
 
-with open(file_path, 'rb') as f:
+with open(train_path, 'rb') as f:
     train_data = pickle.load(f)
 
 with open(valid_path, 'rb') as f:
