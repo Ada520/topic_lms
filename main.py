@@ -125,7 +125,7 @@ criterion = nn.CrossEntropyLoss()
 ###############################################################################
 
 
-def evaluate(data_source, batch_size=10):
+def evaluate(data_source, batch_size=20):
     print("EVALUATION")
 
     if args.model == 'QRNN': model.reset()
@@ -142,6 +142,7 @@ def evaluate(data_source, batch_size=10):
         print data.size(), targets.size()
         # Turn on evaluation mode which disables dropout.
         model.eval()
+        print "evaluating!"
         output = model(data, hidden, return_h=False)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
