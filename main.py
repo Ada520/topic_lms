@@ -125,7 +125,7 @@ criterion = nn.CrossEntropyLoss()
 ###############################################################################
 
 
-def evaluate(data_source, batch_size=10):
+def evaluate(valid_data, batch_size=10):
     print("EVALUATION")
 
     if args.model == 'QRNN': model.reset()
@@ -147,7 +147,7 @@ def evaluate(data_source, batch_size=10):
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
-    return total_loss[0] / len(data_source)
+    return total_loss[0] / len(valid_data)
 
 
 def train():
