@@ -136,7 +136,7 @@ def evaluate(valid_data, batch_size=10):
     hidden = model.init_hidden(args.batch_size)
     _, batch_len = valid_data.shape
     n_batches = (batch_len -1) // seq_len
-    print n_batches
+    print n_batches, len(valid_data)
     for batch_n in range(n_batches):
         #print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
