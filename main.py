@@ -88,10 +88,10 @@ seq_len = 35
 train_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_train_py2.pkl'
 #valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
 valid_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl'
+test_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_test_py2.pkl'
 
-
-eval_batch_size = 10
-test_batch_size = 1
+eval_batch_size = 20
+test_batch_size = 20
 
 with open(train_path, 'rb') as f:
     train_data = pickle.load(f)
@@ -99,7 +99,9 @@ with open(train_path, 'rb') as f:
 with open(valid_path, 'rb') as f:
     valid_data = pickle.load(f)
 
-print valid_data.shape, train_data.shape
+with open(test_path, 'rb') as f:
+    test_data = pickle.load(f)
+print valid_data.shape, train_data.shape, test_data.shape
 #train_data = batchify(corpus.train, args.batch_size, args)
 
 #val_data = batchify(corpus.valid, eval_batch_size, args)
@@ -126,7 +128,7 @@ criterion = nn.CrossEntropyLoss()
 ###############################################################################
 
 
-def evaluate(valid_data, batch_size=10):
+def evaluate(data_source, batch_size=10):
     print("EVALUATION")
     # Turn on evaluation mode which disables dropout.
     model.eval()
@@ -134,20 +136,21 @@ def evaluate(valid_data, batch_size=10):
     total_loss = 0
     #ntokens = len(corpus.dictionary)
     hidden = model.init_hidden(args.batch_size)
-    _, batch_len = valid_data.shape
+    _, batch_len = data_source.shape
     n_batches = (batch_len -1) // seq_len
-    print n_batches, len(valid_data)
+    #print n_batches, (valid_data.shape)
     for batch_n in range(n_batches):
         #print ("first batch")
-        data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
-        targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-        print len(data), len(targets)
+        data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
+        targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+        #print len(data), len(targets)
+        #print data.size()
         #print "evaluating!"
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
-        total_loss += criterion(output_flat, targets).data
+        total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
-    return total_loss[0] / len(valid_data)
+    return total_loss[0] / (data_source.shape[1])
 
 
 def train():
