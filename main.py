@@ -141,13 +141,14 @@ def evaluate(valid_data, batch_size=10):
         #print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-        print len(data), len(targets)
+        #print len(data), len(targets)
+        print data.size()
         #print "evaluating!"
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
-    return total_loss[0] / len(valid_data)
+    return total_loss[0] / (valid_data.shape[1])
 
 
 def train():
