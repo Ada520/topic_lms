@@ -99,9 +99,9 @@ with open(train_path, 'rb') as f:
 with open(valid_path, 'rb') as f:
     valid_data = pickle.load(f)
 
-with open(valid_path, 'rb') as f:
+with open(test_path, 'rb') as f:
     test_data = pickle.load(f)
-print valid_data.shape, train_data.shape. test_data.shape
+print valid_data.shape, train_data.shape, test_data.shape
 #train_data = batchify(corpus.train, args.batch_size, args)
 
 #val_data = batchify(corpus.valid, eval_batch_size, args)
