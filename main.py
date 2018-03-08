@@ -1,5 +1,5 @@
 import argparse
-import ipdb
+#import ipdb
 import time
 import math
 import numpy as np
@@ -84,18 +84,22 @@ if torch.cuda.is_available():
 seq_len = 35
 #corpus = data.Corpus(args.data)
 #file_path = 'data_py2.pkl'
-file_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_train_py2.pkl'
-valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
+#train_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_train_py2.pkl'
+train_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_train_py2.pkl'
+#valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
+valid_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl'
+
 
 eval_batch_size = 10
 test_batch_size = 1
 
-with open(file_path, 'rb') as f:
+with open(train_path, 'rb') as f:
     train_data = pickle.load(f)
 
 with open(valid_path, 'rb') as f:
     valid_data = pickle.load(f)
 
+print valid_data.shape, train_data.shape
 #train_data = batchify(corpus.train, args.batch_size, args)
 
 #val_data = batchify(corpus.valid, eval_batch_size, args)
@@ -122,27 +126,28 @@ criterion = nn.CrossEntropyLoss()
 ###############################################################################
 
 
-def evaluate(data_source, batch_size=10):
+def evaluate(valid_data, batch_size=10):
     print("EVALUATION")
     # Turn on evaluation mode which disables dropout.
     model.eval()
     if args.model == 'QRNN': model.reset()
     total_loss = 0
     #ntokens = len(corpus.dictionary)
-    hidden = model.init_hidden(batch_size)
+    hidden = model.init_hidden(args.batch_size)
     _, batch_len = valid_data.shape
     n_batches = (batch_len -1) // seq_len
-
+    print n_batches, len(valid_data)
     for batch_n in range(n_batches):
-        print ("first batch")
+        #print ("first batch")
         data = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(valid_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-
+        print len(data), len(targets)
+        #print "evaluating!"
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
-        total_loss += len(data) * criterion(output_flat, targets).data
+        total_loss += criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
-    return total_loss[0] / len(data_source)
+    return total_loss[0] / len(valid_data)
 
 
 def train():
@@ -249,6 +254,7 @@ try:
 
         else:
             val_loss = evaluate(valid_data, eval_batch_size)
+            print val_loss
             print('-' * 89)
             print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
                     'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
