@@ -178,7 +178,7 @@ class LSTMCell(RNNCellBase):
 
 
 class LSTMtopicCell(RNNCellBase):
-    r"""A long short-term memory (LSTM) cell.
+    r"""A long short-term memory (LSTM) cell with topic vectors as additional inputs.
 
     .. math::
 
