@@ -101,7 +101,7 @@ with open(valid_path, 'rb') as f:
 
 with open(test_path, 'rb') as f:
     test_data = pickle.load(f)
-print valid_data.shape, train_data.shape, test_data.shape
+print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
 
 #val_data = batchify(corpus.valid, eval_batch_size, args)
@@ -257,7 +257,7 @@ try:
 
         else:
             val_loss = evaluate(valid_data, eval_batch_size)
-            print val_loss
+            #print val_loss
             print('-' * 89)
             print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
                     'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
