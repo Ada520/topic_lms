@@ -88,15 +88,13 @@ if torch.cuda.is_available():
 seq_len = 35
 #corpus = data.Corpus(args.data)
 #file_path = 'data_py2.pkl'
-#train_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_train_py2.pkl'
-train_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_train_py2.pkl'
-#valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
-valid_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl'
-test_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_test_py2.pkl'
-word2idx_f = '/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict'
-lda_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/topic_models/lda_trained_model'
+train_path = os.path.expanduser('~/topic_lms/data/amazon/amazon_train_py2.pkl')
+valid_path = os.path.expanduser('~/topic_lms/data/amazon/amazon_valid_py2.pkl')
+test_path = os.path.expanduser('~/topic_lms/data/amazon/amazon_test_py2.pkl')
+word2idx_f = os.path.expanduser('~/topic_lms/data/amazon/vocab_dict')
+lda_path = os.path.expanduser('~/topic_lms/data/amazon/topic_models/lda_trained_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = ''
+lda_dict_path = os.path.expanduser('~/topic_lms/data/amazon/topic_models/lda_trained_model.id2word')
 eval_batch_size = 20
 test_batch_size = 20
 
@@ -115,7 +113,7 @@ with open(word2idx_f, 'rb') as f:
 idx2word = {v: k for k, v in word2idx.items()}
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
-#lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
+lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -127,8 +125,6 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 # Build the model
 ###############################################################################
 
-#ntokens = len(corpus.dictionary)
-# ntokens = 100000
 ntokens = 10566
 if args.mit_topic:
     model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, 50)
@@ -137,8 +133,8 @@ else:
 if args.cuda:
     model.cuda()
 total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[0] for x in model.parameters())
-print('Args:', args)
-print('Model total parameters:', total_params)
+print(f'Args: {args}')
+print(f'Model total parameters: {total_params}')
 
 criterion = nn.CrossEntropyLoss()
 
@@ -181,11 +177,8 @@ def get_theta(texts, lda, dictionari, idx2word):
     :param idx2word:
     :return:
     """
-    #print (texts[0])
     texts = [[get_id2word(idx, idx2word) for idx in sent] for sent in texts]
-    #print (texts)
     review_alphas = np.array([get_lda_vec(lda[dictionari.doc2bow(sentence)]) for sentence in texts])
-    #print (review_alphas)
     return torch.from_numpy(review_alphas)
 
 
@@ -198,15 +191,13 @@ def evaluate(data_source, batch_size=10):
     print("EVALUATION")
     # Turn on evaluation mode which disables dropout.
     model.eval()
-    if args.model == 'QRNN': model.reset()
+    if args.model == 'QRNN':
+        model.reset()
     total_loss = 0
-    #ntokens = len(corpus.dictionary)
     hidden = model.init_hidden(args.batch_size)
     _, batch_len = data_source.shape
     n_batches = (batch_len -1) // seq_len
-    #print n_batches, (valid_data.shape)
     for batch_n in range(n_batches):
-        #print ("first batch")
         data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
         #print len(data), len(targets)
@@ -238,22 +229,11 @@ def train():
     if args.model == 'QRNN': model.reset()
     total_loss = 0
     start_time = time.time()
-    #ntokens = len(corpus.dictionary)
-    #ntokens = 100000
     hidden = model.init_hidden(args.batch_size)
     m, batch_len = train_data.shape
     n_batches = (batch_len -1) // seq_len
-    #batch, i = 0, 0
-    #while i < train_data.size(0) - 1 - 1:
     for batch_n in range(n_batches):
-    #for batch_n in range(0, args.batch_size):
-        #from_index = batch_n * seq_len
-        #to_index = (batch_n + 1) * seq_len
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
-        # Prevent excessively small or negative sequence lengths
-        #seq_len = max(5, int(np.random.normal(bptt, 5)))
-        # There's a very small chance that it could select a very long sequence length resulting in OOM
-        # seq_len = min(seq_len, args.bptt + 10)
 
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
