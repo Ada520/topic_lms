@@ -134,7 +134,7 @@ class RNNModel(nn.Module):
         elif self.rnn_type == 'QRNN' or self.rnn_type == 'GRU':
             return [Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_())
                     for l in range(self.nlayers)]
-
+        
 
 class RNNModel_mit_topic(nn.Module):
     """Container module with an encoder, a recurrent module, and a decoder."""

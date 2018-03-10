@@ -10,6 +10,7 @@ import pickle
 import data
 import model
 import os
+from gensim import models
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 
@@ -65,6 +66,8 @@ parser.add_argument('--beta', type=float, default=1,
                     help='beta slowness regularization applied on RNN activiation (beta = 0 means no regularization)')
 parser.add_argument('--wdecay', type=float, default=1.2e-6,
                     help='weight decay applied to all weights')
+parser.add_argument('--mit-topic', type=bool, default=False,
+                    help='with additional topic embedding')
 args = parser.parse_args()
 
 # Set the random seed manually for reproducibility.
@@ -89,7 +92,8 @@ train_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_train_py2.pkl
 #valid_path = '/data/user/apopkes/data/amazon/train_arrays/py2/amazon_valid_py2.pkl'
 valid_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl'
 test_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_test_py2.pkl'
-
+word2idx_f = '/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict'
+lda_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/topic_models/lda_trained_model'
 eval_batch_size = 20
 test_batch_size = 20
 
@@ -101,6 +105,13 @@ with open(valid_path, 'rb') as f:
 
 with open(test_path, 'rb') as f:
     test_data = pickle.load(f)
+
+with open(word2idx_f, 'rb') as f:
+    word2idx = pickle.load(f)
+
+idx2word = {v: k for k, v in word2idx.iteritems()}
+lda_model = models.LdaModel.load(lda_path)
+
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
 
