@@ -242,7 +242,7 @@ def train():
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         #print data.size()
         #print( targets.size())
-        print (data.data.numpy())
+        print (data.data.cpu().numpy())
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
