@@ -212,7 +212,21 @@ def evaluate(data_source, batch_size=10):
         #print len(data), len(targets)
         #print data.size()
         #print "evaluating!"
-        output = model(data, hidden)
+        #comment out this line to get the original lda vector
+        # inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
+
+        # Starting each batch, we detach the hidden state from how it was previously produced.
+        # If we didn't, the model would try backpropagating all the way to start of the dataset.
+        hidden = repackage_hidden(hidden)
+        #print hidden
+        optimizer.zero_grad()
+        if args.mit_topic:
+            output = model(data, topic_var, hidden, return_h=True)
+        else:
+            output = model(data, hidden, return_h=True)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
@@ -252,7 +266,9 @@ def train():
         #print( targets.size())
         #print (data.data.cpu().numpy())
         #print ('next batch')
+        #Comment out this line to get the original lda vector
         #inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        #coment the vector with zeros
         inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
         inp_topic = inp_topic.type(torch.cuda.FloatTensor)
         topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
