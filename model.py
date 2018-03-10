@@ -204,7 +204,7 @@ class RNNModel_mit_topic(nn.Module):
         #input = input.transpose(0, 1)
         for j in range(input.size(0)):
             #print input[j].size()
-            hx, cx = rnnmodel(input[j], (hx, cx))
+            hx, cx = rnnmodel(input[j], topic_vec, (hx, cx))
             hx_all.append(hx)
             cx_all.append(cx)
 
