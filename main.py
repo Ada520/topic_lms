@@ -115,7 +115,7 @@ with open(word2idx_f, 'rb') as f:
 idx2word = {v: k for k, v in word2idx.items()}
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
-lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
+#lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
