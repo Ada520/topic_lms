@@ -11,6 +11,7 @@ import data
 import model
 import os
 from gensim import models
+import gensim
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 
@@ -94,6 +95,8 @@ valid_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl
 test_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_test_py2.pkl'
 word2idx_f = '/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict'
 lda_path = '/home/DebanjanChaudhuri/topic_lms/data/amazon/topic_models/lda_trained_model'
+#path to gensim dictionary used to create lda model
+lda_dict_path = ''
 eval_batch_size = 20
 test_batch_size = 20
 
@@ -111,6 +114,8 @@ with open(word2idx_f, 'rb') as f:
 
 idx2word = {v: k for k, v in word2idx.items()}
 lda_model = models.LdaModel.load(lda_path)
+#load the lda dictionary
+lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -125,7 +130,10 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 #ntokens = len(corpus.dictionary)
 # ntokens = 100000
 ntokens = 10566
-model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
+if args.mit_topic:
+    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, 50)
+else:
+    model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 if args.cuda:
     model.cuda()
 total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[0] for x in model.parameters())
@@ -243,6 +251,9 @@ def train():
         #print data.size()
         #print( targets.size())
         print (data.data.cpu().numpy())
+        print ('next batch')
+        #inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        #inp_topic = inp_topic.type(torch.cuda.FloatTensor)
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
