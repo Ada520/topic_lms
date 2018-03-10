@@ -204,7 +204,7 @@ def evaluate(data_source, batch_size=10):
         #print len(data), len(targets)
         #print data.size()
         #print "evaluating!"
-        print data.numpy()
+        print (data.numpy())
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
