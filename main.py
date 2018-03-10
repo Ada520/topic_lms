@@ -115,7 +115,7 @@ with open(word2idx_f, 'rb') as f:
 idx2word = {v: k for k, v in word2idx.items()}
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
-#lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
+lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -253,15 +253,18 @@ def train():
         print (data.data.cpu().numpy())
         print ('next batch')
         #inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
-        #inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        inp_topic = inp_topic.type(torch.cuda.FloatTensor)
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
         hidden = repackage_hidden(hidden)
         #print hidden
         optimizer.zero_grad()
-
-        output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
+        if args.mit_topic:
+            output, rnn_hs, dropped_rnn_hs = model(data, inp_topic, hidden, return_h=True)
+        else:
+            output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
         #print(output.size(), targets.size())
         raw_loss = criterion(output.view(-1, ntokens), targets)
 

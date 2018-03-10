@@ -134,7 +134,7 @@ class RNNModel(nn.Module):
         elif self.rnn_type == 'QRNN' or self.rnn_type == 'GRU':
             return [Variable(weight.new(1, bsz, self.nhid if l != self.nlayers - 1 else (self.ninp if self.tie_weights else self.nhid)).zero_())
                     for l in range(self.nlayers)]
-        
+
 
 class RNNModel_mit_topic(nn.Module):
     """Container module with an encoder, a recurrent module, and a decoder."""
@@ -191,7 +191,7 @@ class RNNModel_mit_topic(nn.Module):
     def reset(self):
         if self.rnn_type == 'QRNN': [r.reset() for r in self.rnns]
 
-    def run_lstmcell(self, rnnmodel, input, hdn):
+    def run_lstmcell(self, rnnmodel, input, topic_vec, hdn):
         #print input.size()
         #print hidden[0]
         #print hdn
@@ -217,7 +217,7 @@ class RNNModel_mit_topic(nn.Module):
         self.decoder.bias.data.fill_(0)
         self.decoder.weight.data.uniform_(-initrange, initrange)
 
-    def forward(self, input, hidden, return_h=False):
+    def forward(self, input, topic_vec, hidden, return_h=False):
         emb = embedded_dropout(self.encoder, input)
 
         #emb = self.idrop(emb)
@@ -232,7 +232,7 @@ class RNNModel_mit_topic(nn.Module):
         for l, rnn in enumerate(self.rnns):
             current_input = raw_output
             #print rnn
-            raw_output, new_h = self.run_lstmcell(rnn, raw_output, hidden[l])
+            raw_output, new_h = self.run_lstmcell(rnn, raw_output, topic_vec, hidden[l])
             del(rnn)
             new_hidden.append(new_h)
             raw_outputs.append(raw_output)
