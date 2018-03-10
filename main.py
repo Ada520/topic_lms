@@ -135,6 +135,53 @@ print('Model total parameters:', total_params)
 criterion = nn.CrossEntropyLoss()
 
 ###############################################################################
+# get lda vectors
+###############################################################################
+
+
+def get_lda_vec(lda_dict):
+    """
+    get lda vector
+    :param lda_dict:
+    :return:
+    """
+    lda_vec = np.zeros(50, dtype='float32')
+    for id, val in lda_dict:
+        lda_vec[id] = val
+    return lda_vec
+
+
+def get_id2word(idx, idx2w_dict):
+    """
+    get id2word mappings
+    :param idx:
+    :param idx2w_dict:
+    :return:
+    """
+    try:
+        return idx2w_dict[idx]
+    except KeyError:
+        return '__UNK__'
+
+
+def get_theta(texts, lda, dictionari, idx2word):
+    """
+    get doc-topic distribution vector for all reviews
+    :param texts:
+    :param lda:e
+    :param dictionari:
+    :param idx2word:
+    :return:
+    """
+    #print (texts[0])
+    texts = [[get_id2word(idx, idx2word) for idx in sent] for sent in texts]
+    #print (texts)
+    review_alphas = np.array([get_lda_vec(lda[dictionari.doc2bow(sentence)]) for sentence in texts])
+    #print (review_alphas)
+    return torch.from_numpy(review_alphas)
+
+
+###############################################################################
 # Training code
 ###############################################################################
 
@@ -157,6 +204,7 @@ def evaluate(data_source, batch_size=10):
         #print len(data), len(targets)
         #print data.size()
         #print "evaluating!"
+        print data.numpy()
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
