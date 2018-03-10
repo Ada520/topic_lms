@@ -255,6 +255,7 @@ def train():
         #inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
         inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
         inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
@@ -262,7 +263,7 @@ def train():
         #print hidden
         optimizer.zero_grad()
         if args.mit_topic:
-            output, rnn_hs, dropped_rnn_hs = model(data, inp_topic, hidden, return_h=True)
+            output, rnn_hs, dropped_rnn_hs = model(data, topic_var, hidden, return_h=True)
         else:
             output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
         #print(output.size(), targets.size())
