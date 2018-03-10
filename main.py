@@ -204,7 +204,6 @@ def evaluate(data_source, batch_size=10):
         #print len(data), len(targets)
         #print data.size()
         #print "evaluating!"
-        print (data.numpy())
         output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
@@ -243,6 +242,7 @@ def train():
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         #print data.size()
         #print( targets.size())
+        print (data.numpy())
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
