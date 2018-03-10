@@ -109,7 +109,7 @@ with open(test_path, 'rb') as f:
 with open(word2idx_f, 'rb') as f:
     word2idx = pickle.load(f)
 
-idx2word = {v: k for k, v in word2idx.iteritems()}
+idx2word = {v: k for k, v in word2idx.items()}
 lda_model = models.LdaModel.load(lda_path)
 
 print (valid_data.shape, train_data.shape, test_data.shape)
