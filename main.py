@@ -67,7 +67,7 @@ parser.add_argument('--beta', type=float, default=1,
                     help='beta slowness regularization applied on RNN activiation (beta = 0 means no regularization)')
 parser.add_argument('--wdecay', type=float, default=1.2e-6,
                     help='weight decay applied to all weights')
-parser.add_argument('--mit-topic', type=bool, default=False,
+parser.add_argument('--mit-topic', type=bool, default=True,
                     help='with additional topic embedding')
 args = parser.parse_args()
 
