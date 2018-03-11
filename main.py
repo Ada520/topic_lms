@@ -175,7 +175,7 @@ def get_theta(texts, lda, dictionari, idx2word):
     :param idx2word:
     :return:
     """
-    print ((texts.shape()))
+    print ((texts.shape))
     texts = [[get_id2word(idx, idx2word) for idx in sent] for sent in texts]
     review_alphas = np.array([get_lda_vec(lda[dictionari.doc2bow(sentence)]) for sentence in texts])
     return torch.from_numpy(review_alphas)
