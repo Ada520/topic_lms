@@ -86,8 +86,6 @@ if torch.cuda.is_available():
 
 
 seq_len = 35
-#corpus = data.Corpus(args.data)
-#file_path = 'data_py2.pkl'
 train_path = os.path.expanduser('~/topic_lms/data/amazon/amazon_train_py2.pkl')
 valid_path = os.path.expanduser('~/topic_lms/data/amazon/amazon_valid_py2.pkl')
 test_path = os.path.expanduser('~/topic_lms/data/amazon/amazon_test_py2.pkl')
@@ -212,7 +210,6 @@ def evaluate(data_source, batch_size=10):
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
         hidden = repackage_hidden(hidden)
-        #print hidden
         optimizer.zero_grad()
         if args.mit_topic:
             output = model(data, topic_var, hidden, return_h=True)
@@ -299,7 +296,6 @@ stored_loss = 100000000
 # At any point you can hit Ctrl + C to break out of training early.
 try:
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.wdecay)
-    #optimizer = torch.optim.Adam()
     for epoch in range(1, args.epochs+1):
         epoch_start_time = time.time()
         train()
