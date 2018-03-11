@@ -202,8 +202,8 @@ def evaluate(data_source, batch_size=10):
         #print data.size()
         #print "evaluating!"
         #comment out this line to get the original lda vector
-        # inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
-        inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
         inp_topic = inp_topic.type(torch.cuda.FloatTensor)
         topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
 
@@ -244,9 +244,9 @@ def train():
         #print (data.data.cpu().numpy())
         #print ('next batch')
         #Comment out this line to get the original lda vector
-        #inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
         #coment the vector with zeros
-        inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
         inp_topic = inp_topic.type(torch.cuda.FloatTensor)
         topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
 
