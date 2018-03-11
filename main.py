@@ -212,9 +212,9 @@ def evaluate(data_source, batch_size=10):
         hidden = repackage_hidden(hidden)
         optimizer.zero_grad()
         if args.mit_topic:
-            output = model(data, topic_var, hidden, return_h=True)
+            output = model(data, topic_var, hidden)
         else:
-            output = model(data, hidden, return_h=True)
+            output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
