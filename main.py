@@ -90,9 +90,9 @@ train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/a
 valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl')
 test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_test_py2.pkl')
 word2idx_f = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict')
-lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/topic_models/amazon_lda')
+lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/lda_models/amazon_lda')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/topic_models/amazon_dict')
+lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/lda_models/amazon_dict')
 eval_batch_size = 20
 test_batch_size = 20
 
