@@ -5,21 +5,22 @@ import pandas as pd
 #from nltk.tokenize import sent_tokenize
 #from nltk.tokenize import word_tokenize
 import gzip
-#import ipdb
 import re
-import regex
-#from nltk.corpus import stopwords
 import logging
 
 logger = logging.getLogger()
 # logging.basicConfig(filename='log_amazonPreprocess_Electronics.txt', level=logging.INFO, format=' %(asctime)s - %(levelname)s - %(message)s')
 #logging.basicConfig(filename='log_amazonPreprocess_Books.txt', level=logging.INFO, format=' %(asctime)s - %(levelname)s - %(message)s')
 #logging.basicConfig(filename='log_amazonPreprocess_Kitchen.txt', level=logging.INFO, format=' %(asctime)s - %(levelname)s - %(message)s')
+n_out_f = 495
+out_dir = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_data/book_chunks/'
+
 
 def parse(path):
     g = gzip.open(path, 'rb')
     for l in g:
         yield eval(l)
+
 
 def getDF(path):
     i = 0
@@ -28,6 +29,20 @@ def getDF(path):
         df[i] = d
         i += 1
     return pd.DataFrame.from_dict(df, orient='index')
+
+
+def get_chunks(dat, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(dat), n):
+        yield dat[i:i + n]
+
+
+def write_chunks(data, file_n):
+    print (file_n, data[0], len(data))
+    word_tokenized = [[(sent + ' eos').split() for sent in review] for review in data]
+    with open(out_dir + 'book_' + file_n + '.pkl', 'wb') as f:
+        pickle.dump(word_tokenized, f)
+
 
 def preprocess_reviews(path, name):
     # logger.info("get dataframge")
@@ -72,20 +87,29 @@ def preprocess_reviews(path, name):
     with open(path, 'rb') as f:
         tokenized = pickle.load(f)
 
+    batch_size = int(len(tokenized) / n_out_f)
+    print (batch_size)
+
     logger.info("word tokenization")
-    word_tokenized = [[(sent+' eos').split() for sent in review] for review in tokenized]
+    i=0
 
-    path = '/data/user/apopkes/data/amazon/word_tokenized_'+name
-    with open(path, 'wb') as f:
-        pickle.dump(word_tokenized, f)
 
-    logger.info("insert end-of-sentence markers")
-    # add end-of-sentence markers to each sentence
-    #[sent.append('eos') for review in word_tokenized for sent in review]
+    #word_tokenized = [[word_tokenize(sent) for sent in review] for review in tokenized]
 
-    path = '/data/user/apopkes/data/amazon/word_tokenized_eos_'+name
-    with open(path, 'wb') as f:
-        pickle.dump(word_tokenized, f)
+    #path = '/data/user/apopkes/data/amazon/word_tokenized_'+name
+    # with open(path, 'wb') as f:
+    #     pickle.dump(word_tokenized, f)
+
+    # logger.info("insert end-of-sentence markers")
+    # # add end-of-sentence markers to each sentence
+    # [sent.append('eos') for review in word_tokenized for sent in review]
+    #
+    # path = '/data/user/apopkes/data/amazon/word_tokenized_eos_'+name
+    # with open(path, 'wb') as f:
+    #     pickle.dump(word_tokenized, f)
+    for chunk in get_chunks(tokenized, batch_size):
+        write_chunks(chunk, str(i))
+        i = i + 1
 
     logger.info("End of program")
 
