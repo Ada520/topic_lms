@@ -74,7 +74,6 @@ def remove_rare(filepath, vocab_path, save_path):
     transformed_sentences = [[word if word in vocabulary else 'rare' for word in sentence] for sentence in sentences]
 
     logger.info("Flatten the list")
-    ipdb.set_trace()
     transformed_sentences = [word for sentence in transformed_sentences for word in sentence]
 
     logger.info("Save to disk")
@@ -88,7 +87,6 @@ def build_vocab(filepath, save_path):
         words = pickle.load(f)
 
     word_to_id = dict(zip(words, range(len(words))))
-    ipdb.set_trace()
     with open(save_path, 'wb') as f:
         pickle.dump(word_to_id, f)
 
@@ -115,11 +113,9 @@ def file_to_word_ids(filepath, vocab_path, save_path):
     logger.info("Transform the file to word id's")
     words_as_ids = [word_to_id[word] for word in data]
 
-    ipdb.set_trace()
     logger.info("Save the transformed file to disk")
     with open(save_path, 'wb') as f:
         pickle.dump(words_as_ids, f)
-
 
 def split_train(filepath, categories_path, batch_size=20, num_steps=35):
     """
@@ -127,7 +123,6 @@ def split_train(filepath, categories_path, batch_size=20, num_steps=35):
     80% Training data
     20% validation data
     """
-    ipdb.set_trace()
 
     logger.info("Load file")
     with open(filepath, 'rb') as f:
