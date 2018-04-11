@@ -5,7 +5,8 @@ import ipdb
 import os
 import glob
 
-filepaths = glob.glob(os.path.expanduser('~/topic_lms/data/apnews/apnews50k_valid.txt'))
+ipdb.set_trace()
+filepaths = glob.glob(os.path.expanduser('~/topic_lms/data/apnews/apnews50k*'))
 
 for fpath in filepaths:
     name = fpath.split(sep='/')[-1].split(sep='.')[-2]

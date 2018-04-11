@@ -10,7 +10,7 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
 
 
-def get_vocabulary(pathname, vocab_size=None, min_count=None):
+def get_vocabulary(pathname, save_vocab, vocab_size=None, min_count=None):
     """
     Computes a list of the most frequent words in the given file
 
@@ -32,7 +32,6 @@ def get_vocabulary(pathname, vocab_size=None, min_count=None):
     logger.info("Count frequency of words in file")
     word_freq = Counter(flattened)
 
-    ipdb.set_trace()
     # Turn Counter into Pandas Series for further analysis
     series = pd.Series(word_freq)
 
@@ -48,15 +47,12 @@ def get_vocabulary(pathname, vocab_size=None, min_count=None):
     mostCommon = pd.Index.tolist(mostCommon.index)
     logger.info("Length of vocab: {}".format(len(mostCommon)))
 
-    save_vocab = '/data/user/apopkes/data/amazon/vocab'
+    # save_vocab = '/data/user/apopkes/data/amazon/vocab'
     with open(save_vocab, 'wb') as f:
         pickle.dump(mostCommon, f)
 
-    # # Save the series to file
-    # series.to_csv(pathname+'wordFrequenciesNoSpellCheck')
 
-
-def remove_rare(filepath, vocab_path):
+def remove_rare(filepath, vocab_path, save_path):
     """
     Replaces all words that are not in vocab with the token "rare"
 
@@ -65,7 +61,6 @@ def remove_rare(filepath, vocab_path):
         filename: path of file to be transformed
         vocab: name of vocabulary file
     """
-    ipdb.set_trace()
     logger.info("Loading all sentences")
     with open(filepath, "rb") as fp:
          data = pickle.load(fp)
@@ -78,32 +73,27 @@ def remove_rare(filepath, vocab_path):
     sentences = [sent for review in data for sent in review]
     transformed_sentences = [[word if word in vocabulary else 'rare' for word in sentence] for sentence in sentences]
 
-    # logger.info("Save to disk")
-    # with open(pathname+'transformedTokensGensim_'+file_name, 'wb') as f:
-    #     pickle.dump(transformed_sentences, f)
-
     logger.info("Flatten the list")
+    ipdb.set_trace()
     transformed_sentences = [word for sentence in transformed_sentences for word in sentence]
 
-    indices = [i for i, x in enumerate(transformed_sentences) if x == 'rare']
     logger.info("Save to disk")
-    save_path = '/data/user/apopkes/data/amazon/flatTransformedTokens_test'
+    # save_path = '/data/user/apopkes/data/amazon/flatTransformedTokens_test'
     with open(save_path, 'wb') as f:
         pickle.dump(transformed_sentences, f)
 
 
-def build_vocab(filepath):
+def build_vocab(filepath, save_path):
     with open(filepath, 'rb') as f:
         words = pickle.load(f)
 
     word_to_id = dict(zip(words, range(len(words))))
     ipdb.set_trace()
-    save_path = '/data/user/apopkes/data/amazon/vocab_dict'
     with open(save_path, 'wb') as f:
         pickle.dump(word_to_id, f)
 
 
-def file_to_word_ids(filepath, vocab_path):
+def file_to_word_ids(filepath, vocab_path, save_path):
     """
     Transforms a list of words into a list of word ID's given a vocabulary.
     The transformed list is saved to disk.
@@ -116,10 +106,6 @@ def file_to_word_ids(filepath, vocab_path):
         word_to_id: dictionary mapping each word to an index
 
     """
-    ipdb.set_trace()
-    logger.info("Retrieve filename")
-    file_name = filepath.split(sep='_')[-1]
-
     logger.info("Load file")
     with open(filepath, 'rb') as f:
         data = pickle.load(f)
@@ -129,8 +115,8 @@ def file_to_word_ids(filepath, vocab_path):
     logger.info("Transform the file to word id's")
     words_as_ids = [word_to_id[word] for word in data]
 
+    ipdb.set_trace()
     logger.info("Save the transformed file to disk")
-    save_path = '/data/user/apopkes/data/amazon/word_ids_test'
     with open(save_path, 'wb') as f:
         pickle.dump(words_as_ids, f)
 
@@ -218,19 +204,39 @@ def split_test(filepath, categories_path, batch_size=20, num_steps=35):
 
 if __name__=="__main__":
 
-    root_path = '/data/user/apopkes/data/amazon/train_arrays/'
-    # pathname = '/data/user/apopkes/data/amazon/mixed_dataset'
-    #get_vocabulary(pathname, min_count=10)
-    # filepath = '/data/user/apopkes/data/amazon/test_data'
-    #vocab_path = '/data/user/apopkes/data/amazon/vocab_dict'
-    # filepath = '/data/user/apopkes/data/amazon/flatTransformedTokens_test'
-    #filepath = '/data/user/apopkes/data/amazon/word_ids_train'
-    #categories_path = '/data/user/apopkes/data/amazon/train_categories'
-    filepath = '/data/user/apopkes/data/amazon/word_ids_test'
-    categories_path = '/data/user/apopkes/data/amazon/test_categories'
-    # remove_rare(filepath, vocab_path)
-    # build_vocab(vocab_path)
-    # file_to_word_ids(filepath, vocab_path)
+    train_path = os.path.expanduser('~/topic_lms/data/preprocessed/word_tokenized_eos_apnews50k_train')
+    valid_path = os.path.expanduser('~/topic_lms/data/preprocessed/word_tokenized_eos_apnews50k_valid')
+    test_path = os.path.expanduser('~/topic_lms/data/preprocessed/word_tokenized_eos_apnews50k_test')
+
+    # join training and validation set
+    with open(train_path, 'rb') as f:
+        joined = pickle.load(f)
+
+    with open(valid_path, 'rb') as f:
+        joined.extend(pickle.load(f))
+
+    # adapt this path
+    joined_path = os.path.expanduser('~/topic_lms/data/preprocessed/joined_word_tokenized_eos_apnews')
+
+    with open(joined_path, 'wb') as f:
+        pickle.dump(joined, f)
+
+    # adapt this path
+    vocab_path = os.path.expanduser('~/topic_lms/data/preprocessed/vocab_apnews')
+    # ipdb.set_trace()
+    get_vocabulary(joined_path, vocab_path, min_count=10)
+
+    # adapt this path
+    save_path = os.path.expanduser('~/topic_lms/data/preprocessed/apnews_flatTransformedTokens_valid')
+    remove_rare(valid_path, vocab_path, save_path)
+
+    # adapt this path
+    vocab_dict = os.path.expanduser('~/topic_lms/data/preprocessed/apnews_vocab_dict')
+    build_vocab(vocab_path, vocab_dict)
+
+    word_ids = os.path.expanduser('~/topic_lms/data/preprocessed/apnews_wordids_valid')
+    file_to_word_ids(save_path, vocab_dict, word_ids)
+
     #split_train(filepath, categories_path)
-    split_test(filepath, categories_path)
+    # split_test(filepath, categories_path)
 
