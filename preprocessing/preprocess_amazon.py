@@ -2,22 +2,18 @@ import glob
 import os
 import pickle
 import pandas as pd
-from nltk.tokenize import sent_tokenize
-from nltk.tokenize import word_tokenize
+#from nltk.tokenize import sent_tokenize
+#from nltk.tokenize import word_tokenize
 import gzip
-import ipdb
 import re
-import regex
-from nltk.corpus import stopwords
 import logging
-import hickle
 
 logger = logging.getLogger()
 # logging.basicConfig(filename='log_amazonPreprocess_Electronics.txt', level=logging.INFO, format=' %(asctime)s - %(levelname)s - %(message)s')
 #logging.basicConfig(filename='log_amazonPreprocess_Books.txt', level=logging.INFO, format=' %(asctime)s - %(levelname)s - %(message)s')
 #logging.basicConfig(filename='log_amazonPreprocess_Kitchen.txt', level=logging.INFO, format=' %(asctime)s - %(levelname)s - %(message)s')
 n_out_f = 495
-out_dir = 'book_chunks/'
+out_dir = '/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_data/book_chunks/'
 
 
 def parse(path):
@@ -42,6 +38,7 @@ def get_chunks(dat, n):
 
 
 def write_chunks(data, file_n):
+    print (file_n, data[0], len(data))
     word_tokenized = [[(sent + ' eos').split() for sent in review] for review in data]
     with open(out_dir + 'book_' + file_n + '.pkl', 'wb') as f:
         pickle.dump(word_tokenized, f)
@@ -90,9 +87,11 @@ def preprocess_reviews(path, name):
     with open(path, 'rb') as f:
         tokenized = pickle.load(f)
 
-    batch_size = len(tokenized) / n_out_f
+    batch_size = int(len(tokenized) / n_out_f)
+    print (batch_size)
 
     logger.info("word tokenization")
+    i=0
 
 
     #word_tokenized = [[word_tokenize(sent) for sent in review] for review in tokenized]
@@ -108,11 +107,9 @@ def preprocess_reviews(path, name):
     # path = '/data/user/apopkes/data/amazon/word_tokenized_eos_'+name
     # with open(path, 'wb') as f:
     #     pickle.dump(word_tokenized, f)
-    i = 0
     for chunk in get_chunks(tokenized, batch_size):
-        write_chunks(chunk, i)
+        write_chunks(chunk, str(i))
         i = i + 1
-
 
     logger.info("End of program")
 
@@ -120,7 +117,7 @@ if __name__ == "__main__":
 
     #file_list = glob.glob('/data/user/apopkes/data/amazon/raw/*')
     #file_list = glob.glob('/data/user/apopkes/data/amazon/raw/reviews_Home_and_Kitchen.json.gz')
-    file_list = glob.glob('/data/user/apopkes/data/amazon/temp_tokenized_Books')
+    file_list = glob.glob('/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_data/temp_tokenized_Books')
     #file_list = glob.glob('/data/user/apopkes/data/amazon/tokenized_Kitchen')
     # file_list = glob.glob('/data/user/apopkes/data/amazon/tokenized_Electronics')
 
