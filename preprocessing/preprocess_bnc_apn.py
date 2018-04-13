@@ -5,15 +5,13 @@ import ipdb
 import os
 import glob
 
-ipdb.set_trace()
+#ipdb.set_trace()
 
 
 def tokenize(corpora):
     filepaths = glob.glob(os.path.expanduser('~/topic_lms/data/' + corpora + '/*'))
     for fpath in filepaths:
-        if 'lda_models' in fpath:
-            continue
-        else:
+        if '.txt' in fpath:
             name = fpath.split(sep='/')[-1].split(sep='.')[0]
             print (name)
             with open(fpath, 'r') as f:
@@ -40,11 +38,13 @@ def tokenize(corpora):
 
                 # add end-of-sentence markers to each sentence
                 #[sent.append('eos') for review in word_tokenized for sent in review]
-                ipdb.set_trace()
+                #ipdb.set_trace()
 
                 path = os.path.expanduser('~/topic_lms/data/' + corpora + 'preprocessed/word_tokenized_eos_' + name)
                 with open(path, 'wb') as f:
                     pickle.dump(word_tokenized, f)
+        else:
+            continue
 
 
 if __name__ == '__main__':
