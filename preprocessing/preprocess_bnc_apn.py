@@ -35,7 +35,7 @@ def tokenize(corpora):
                 print (processed[0])
                 # tokenize sentences into words
                 word_tokenized = [[word_tokenize(sent) for sent in review] for review in processed]
-
+                print (word_tokenized[0])
                 # add end-of-sentence markers to each sentence
                 #[sent.append('eos') for review in word_tokenized for sent in review]
                 #ipdb.set_trace()
