@@ -31,13 +31,12 @@ def tokenize(corpora):
                 processed = [report.split(sep='\t') for report in processed]
 
                 # remove all punctuation
-                processed = [[(re.sub('[^`A-Za-z0-9ÄÜÖßäüö ]+', '', sent) + ' eos' )for sent in review] for review in processed]
-                print (processed[0])
+                processed = [[(re.sub('[^`A-Za-z0-9ÄÜÖßäüö ]+', '', sent))for sent in review] for review in processed]
+
                 # tokenize sentences into words
                 word_tokenized = [[word_tokenize(sent) for sent in review] for review in processed]
-                print (word_tokenized[0])
                 # add end-of-sentence markers to each sentence
-                #[sent.append('eos') for review in word_tokenized for sent in review]
+                [sent.append('eos') for review in word_tokenized for sent in review]
                 #ipdb.set_trace()
 
                 path = os.path.expanduser('~/topic_lms/data/' + corpora + '/preprocessed/word_tokenized_eos_' + name)
