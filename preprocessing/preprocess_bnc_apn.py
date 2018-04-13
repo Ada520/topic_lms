@@ -40,7 +40,7 @@ def tokenize(corpora):
                 #[sent.append('eos') for review in word_tokenized for sent in review]
                 #ipdb.set_trace()
 
-                path = os.path.expanduser('~/topic_lms/data/' + corpora + 'preprocessed/word_tokenized_eos_' + name)
+                path = os.path.expanduser('~/topic_lms/data/' + corpora + '/preprocessed/word_tokenized_eos_' + name)
                 with open(path, 'wb') as f:
                     pickle.dump(word_tokenized, f)
         else:
