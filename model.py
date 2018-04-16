@@ -7,6 +7,7 @@ from locked_dropout import LockedDropout
 from weight_drop import WeightDrop
 from LSTM_topic import LSTMCell, LSTMtopicCell
 
+
 class RNNModel(nn.Module):
     """Container module with an encoder, a recurrent module, and a decoder."""
 
