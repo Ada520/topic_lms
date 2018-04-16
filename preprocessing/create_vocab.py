@@ -51,8 +51,20 @@ def get_vocabulary(pathname, save_vocab, vocab_size=None, min_count=None):
     with open(save_vocab, 'wb') as f:
         pickle.dump(mostCommon, f)
 
+    return mostCommon
 
-def remove_rare(filepath, vocab_path, save_path):
+
+def write_batches(raw_data, batch_size, num_steps, save_path):
+    data_len = len(raw_data)
+    batch_len = data_len // batch_size # total number of batches
+
+    data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
+    # Save numpy array to disk
+    with open(save_path, 'wb') as f:
+        pickle.dump(data, f)
+
+
+def get_flattened_with_unk(data, vocab_path):
     """
     Replaces all words that are not in vocab with the token "rare"
 
@@ -61,25 +73,18 @@ def remove_rare(filepath, vocab_path, save_path):
         filename: path of file to be transformed
         vocab: name of vocabulary file
     """
-    logger.info("Loading all sentences")
-    with open(filepath, "rb") as fp:
-         data = pickle.load(fp)
-
     logger.info("Loading vocabulary")
     with open(vocab_path, "rb") as fp:
          vocabulary = pickle.load(fp)
 
     logger.info("Transform sentences")
     sentences = [sent for review in data for sent in review]
-    transformed_sentences = [[word if word in vocabulary else 'rare' for word in sentence] for sentence in sentences]
+    transformed_sentences = [[word if word in vocabulary else '<unk>' for word in sentence] for sentence in sentences]
 
     logger.info("Flatten the list")
     transformed_sentences = [word for sentence in transformed_sentences for word in sentence]
 
-    logger.info("Save to disk")
-    # save_path = '/data/user/apopkes/data/amazon/flatTransformedTokens_test'
-    with open(save_path, 'wb') as f:
-        pickle.dump(transformed_sentences, f)
+    return transformed_sentences
 
 
 def build_vocab(filepath, save_path):
@@ -91,7 +96,7 @@ def build_vocab(filepath, save_path):
         pickle.dump(word_to_id, f)
 
 
-def file_to_word_ids(filepath, vocab_path, save_path):
+def file_to_word_ids(data, w2id):
     """
     Transforms a list of words into a list of word ID's given a vocabulary.
     The transformed list is saved to disk.
@@ -105,17 +110,12 @@ def file_to_word_ids(filepath, vocab_path, save_path):
 
     """
     logger.info("Load file")
-    with open(filepath, 'rb') as f:
-        data = pickle.load(f)
-    with open(vocab_path, 'rb') as f:
-        word_to_id = pickle.load(f)
+
 
     logger.info("Transform the file to word id's")
-    words_as_ids = [word_to_id[word] for word in data]
+    words_as_ids = [w2id[word] for word in data]
 
-    logger.info("Save the transformed file to disk")
-    with open(save_path, 'wb') as f:
-        pickle.dump(words_as_ids, f)
+    return words_as_ids
 
 def split_train(filepath, categories_path, batch_size=20, num_steps=35):
     """
@@ -197,41 +197,49 @@ def split_test(filepath, categories_path, batch_size=20, num_steps=35):
     with open(save_test_c, 'wb') as f:
         pickle.dump(x_test_c, f)
 
-if __name__=="__main__":
 
-    train_path = os.path.expanduser('~/topic_lms/data/preprocessed/word_tokenized_eos_apnews50k_train')
-    valid_path = os.path.expanduser('~/topic_lms/data/preprocessed/word_tokenized_eos_apnews50k_valid')
-    test_path = os.path.expanduser('~/topic_lms/data/preprocessed/word_tokenized_eos_apnews50k_test')
+def preprocess_files(corpus):
+    train_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/word_tokenized_eos_train')
+    valid_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/word_tokenized_eos_valid')
+    test_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/word_tokenized_eos_test')
 
     # join training and validation set
     with open(train_path, 'rb') as f:
-        joined = pickle.load(f)
+        train = pickle.load(f)
 
     with open(valid_path, 'rb') as f:
-        joined.extend(pickle.load(f))
+        valid = pickle.load(f)
 
+    with open(test_path, 'rb') as f:
+        test = pickle.load(f)
+
+
+    # with open(valid_path, 'rb') as f:
+    #     joined.extend(pickle.load(f))
+    #
+    # # adapt this path
+    # joined_path = os.path.expanduser('~/topic_lms/data/preprocessed/joined_word_tokenized_eos_apnews')
+    #
     # adapt this path
-    joined_path = os.path.expanduser('~/topic_lms/data/preprocessed/joined_word_tokenized_eos_apnews')
-
-    with open(joined_path, 'wb') as f:
-        pickle.dump(joined, f)
-
-    # adapt this path
-    vocab_path = os.path.expanduser('~/topic_lms/data/preprocessed/vocab_apnews')
+    vocab_path = os.path.expanduser('~/topic_lms/data/preprocessed/vocab_' + corpus)
     # ipdb.set_trace()
-    get_vocabulary(joined_path, vocab_path, min_count=10)
+    vocab = get_vocabulary(train, vocab_path, min_count=2)
+    print (vocab)
 
+    train_trans = get_flattened_with_unk(train, vocab_path)
+    train_trans = file_to_word_ids(train_trans, vocab_path)
+
+    out_train = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/train_ids.pkl')
+    write_batches(train_trans, 20, 35, out_train)
     # adapt this path
-    save_path = os.path.expanduser('~/topic_lms/data/preprocessed/apnews_flatTransformedTokens_valid')
-    remove_rare(valid_path, vocab_path, save_path)
 
-    # adapt this path
-    vocab_dict = os.path.expanduser('~/topic_lms/data/preprocessed/apnews_vocab_dict')
-    build_vocab(vocab_path, vocab_dict)
 
-    word_ids = os.path.expanduser('~/topic_lms/data/preprocessed/apnews_wordids_valid')
-    file_to_word_ids(save_path, vocab_dict, word_ids)
+
 
     #split_train(filepath, categories_path)
     # split_test(filepath, categories_path)
+
+
+if __name__=="__main__":
+
 
