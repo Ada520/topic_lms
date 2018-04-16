@@ -14,6 +14,9 @@ from gensim import models
 import gensim
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
+"""
+run using python main.py --batch_size 20 --data data/penn --dropouti 0.4 --dropouth 0.3 --seed 141 --epoch 100 --save apnews.pt
+"""
 
 from utils import batchify, get_batch, repackage_hidden
 
@@ -86,10 +89,10 @@ if torch.cuda.is_available():
 
 
 seq_len = 35
-train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/train_transform.pkl')
-valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/val_transform.pkl')
-test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/test_transform.pkl')
-vocab = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict')
+train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/preprocessed/train_transform.pkl')
+valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/preprocessed/val_transform.pkl')
+test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/preprocessed/test_transform.pkl')
+vocab = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/preprocessed/vocab_apnews')
 lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
 lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/lda_models/lda_dict')
