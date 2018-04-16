@@ -86,13 +86,13 @@ if torch.cuda.is_available():
 
 
 seq_len = 35
-train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_train_py2.pkl')
-valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_valid_py2.pkl')
-test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/amazon_test_py2.pkl')
-word2idx_f = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict')
-lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/lda_models/amazon_lda')
+train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/train_transform.pkl')
+valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/val_transform.pkl')
+test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/test_transform.pkl')
+vocab = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/vocab_dict')
+lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/amazon/lda_models/amazon_dict')
+lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/lda_models/lda_dict')
 eval_batch_size = 20
 test_batch_size = 20
 
@@ -105,10 +105,11 @@ with open(valid_path, 'rb') as f:
 with open(test_path, 'rb') as f:
     test_data = pickle.load(f)
 
-with open(word2idx_f, 'rb') as f:
-    word2idx = pickle.load(f)
+with open(vocab, 'rb') as f:
+    vocab = pickle.load(f)
 
-idx2word = {v: k for k, v in word2idx.items()}
+w2id = dict(zip(vocab, range(len(vocab))))
+idx2word = {v: k for k, v in w2id.items()}
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
@@ -123,7 +124,7 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 # Build the model
 ###############################################################################
 
-ntokens = 10566
+ntokens = len(vocab)
 if args.mit_topic:
     model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, 50)
 else:
