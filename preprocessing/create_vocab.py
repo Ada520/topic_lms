@@ -242,4 +242,4 @@ def preprocess_files(corpus):
 
 if __name__=="__main__":
 
-
+    preprocess_files('bnc')
