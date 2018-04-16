@@ -89,13 +89,13 @@ if torch.cuda.is_available():
 
 
 seq_len = 35
-train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/imdb/preprocessed/train_transform.pkl')
-valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/imdb/preprocessed/val_transform.pkl')
-test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/imdb/preprocessed/test_transform.pkl')
-vocab = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/imdb/preprocessed/vocab_imdb')
-lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/imdb/lda_models/lda_model')
+train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/bnc/preprocessed/train_transform.pkl')
+valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/bnc/preprocessed/val_transform.pkl')
+test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/bnc/preprocessed/test_transform.pkl')
+vocab = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/bnc/preprocessed/vocab_bnc')
+lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/bnc/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/imdb/lda_models/lda_dict')
+lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/bnc/lda_models/lda_dict')
 eval_batch_size = 20
 test_batch_size = 20
 
