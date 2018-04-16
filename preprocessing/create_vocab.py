@@ -10,7 +10,7 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
 
 
-def get_vocabulary(pathname, save_vocab, vocab_size=None, min_count=None):
+def get_vocabulary(data, save_vocab, vocab_size=None, min_count=None):
     """
     Computes a list of the most frequent words in the given file
 
@@ -24,8 +24,6 @@ def get_vocabulary(pathname, save_vocab, vocab_size=None, min_count=None):
     """
     logger.info("Compute list of the most frequent words")
     logger.info('Read in data')
-    with open(pathname, "rb") as fp:
-        data = list(pickle.load(fp))
 
     flattened = [word for review in data for sent in review for word in sent]
 
@@ -221,7 +219,7 @@ def preprocess_files(corpus):
     # joined_path = os.path.expanduser('~/topic_lms/data/preprocessed/joined_word_tokenized_eos_apnews')
     #
     # adapt this path
-    vocab_path = os.path.expanduser('~/topic_lms/data/preprocessed/vocab_' + corpus)
+    vocab_path = os.path.expanduser('~/topic_lms/data/preprocessed/' + corpus + '/vocab_' + corpus)
     # ipdb.set_trace()
     vocab = get_vocabulary(train, vocab_path, min_count=2)
     print (vocab)
