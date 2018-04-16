@@ -62,7 +62,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
         pickle.dump(data, f)
 
 
-def get_flattened_with_unk(data, vocab_path):
+def get_flattened_with_unk(data, vocabulary):
     """
     Replaces all words that are not in vocab with the token "rare"
 
@@ -71,9 +71,6 @@ def get_flattened_with_unk(data, vocab_path):
         filename: path of file to be transformed
         vocab: name of vocabulary file
     """
-    logger.info("Loading vocabulary")
-    with open(vocab_path, "rb") as fp:
-         vocabulary = pickle.load(fp)
 
     logger.info("Transform sentences")
     sentences = [sent for review in data for sent in review]
@@ -197,6 +194,7 @@ def split_test(filepath, categories_path, batch_size=20, num_steps=35):
 
 
 def preprocess_files(corpus):
+    logger.info("Creating out for corpus:" + corpus)
     train_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/word_tokenized_eos_train')
     valid_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/word_tokenized_eos_valid')
     test_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/word_tokenized_eos_test')
@@ -221,17 +219,24 @@ def preprocess_files(corpus):
     # adapt this path
     vocab_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/vocab_' + corpus)
     # ipdb.set_trace()
+    # create the vocabulary
     vocab = get_vocabulary(train, vocab_path, min_count=2)
-    print (vocab)
+    w2id = dict(zip(vocab, range(len(vocab))))
 
-    train_trans = get_flattened_with_unk(train, vocab_path)
-    train_trans = file_to_word_ids(train_trans, vocab_path)
+    train_trans = get_flattened_with_unk(train, vocab)
+    train_trans = file_to_word_ids(train_trans, w2id)
 
-    out_train = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/train_ids.pkl')
+    val_trans = get_flattened_with_unk(valid, vocab)
+    val_trans = file_to_word_ids(val_trans, w2id)
+    test_trans = get_flattened_with_unk(test, vocab)
+    test_trans = file_to_word_ids(test_trans, w2id)
+
+    out_train = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/train_transform.pkl')
+    out_test = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/test_transform.pkl')
+    out_valid = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/val_transform.pkl')
     write_batches(train_trans, 20, 35, out_train)
-    # adapt this path
-
-
+    write_batches(val_trans, 20, 35, out_valid)
+    write_batches(test_trans, 20, 35, out_test)
 
 
     #split_train(filepath, categories_path)
@@ -240,4 +245,6 @@ def preprocess_files(corpus):
 
 if __name__=="__main__":
 
-    preprocess_files('bnc')
+    domains = ['bnc', 'imdb', 'apnews']
+    for dom in domains:
+        preprocess_files(dom)
