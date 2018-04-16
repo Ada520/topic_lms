@@ -43,6 +43,7 @@ def get_vocabulary(data, save_vocab, vocab_size=None, min_count=None):
 
     # Convert the result to a list and save it to disk
     mostCommon = pd.Index.tolist(mostCommon.index)
+    mostCommon.append('<unk>')
     logger.info("Length of vocab: {}".format(len(mostCommon)))
 
     # save_vocab = '/data/user/apopkes/data/amazon/vocab'
@@ -74,6 +75,7 @@ def get_flattened_with_unk(data, vocabulary):
 
     logger.info("Transform sentences")
     sentences = [sent for review in data for sent in review]
+    logger.info("Adding unk token")
     transformed_sentences = [[word if word in vocabulary else '<unk>' for word in sentence] for sentence in sentences]
 
     logger.info("Flatten the list")
@@ -111,6 +113,7 @@ def file_to_word_ids(data, w2id):
     words_as_ids = [w2id[word] for word in data]
 
     return words_as_ids
+
 
 def split_train(filepath, categories_path, batch_size=20, num_steps=35):
     """
