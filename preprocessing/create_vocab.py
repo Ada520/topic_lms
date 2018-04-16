@@ -219,7 +219,7 @@ def preprocess_files(corpus):
     # joined_path = os.path.expanduser('~/topic_lms/data/preprocessed/joined_word_tokenized_eos_apnews')
     #
     # adapt this path
-    vocab_path = os.path.expanduser('~/topic_lms/data' + corpus + '/preprocessed/vocab_' + corpus)
+    vocab_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/vocab_' + corpus)
     # ipdb.set_trace()
     vocab = get_vocabulary(train, vocab_path, min_count=2)
     print (vocab)
