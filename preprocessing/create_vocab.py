@@ -223,7 +223,7 @@ def preprocess_files(corpus):
     vocab_path = os.path.expanduser('~/topic_lms/data/' + corpus + '/preprocessed/vocab_' + corpus)
     # ipdb.set_trace()
     # create the vocabulary
-    vocab = get_vocabulary(train, vocab_path, min_count=2)
+    vocab = get_vocabulary(train, vocab_path, min_count=10)
     w2id = dict(zip(vocab, range(len(vocab))))
 
     train_trans = get_flattened_with_unk(train, vocab)
