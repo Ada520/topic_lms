@@ -127,7 +127,7 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 # Build the model
 ###############################################################################
 
-ntokens = len(vocab)
+ntokens = len(vocab) + 1
 if args.mit_topic:
     model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, 50)
 else:
