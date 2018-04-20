@@ -57,7 +57,7 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--nonmono', type=int, default=5,
                     help='random seed')
-parser.add_argument('--cuda', action='store_false', default=True,
+parser.add_argument('--cuda', action='store_false', default=False,
                     help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
@@ -201,16 +201,25 @@ def evaluate(data_source, batch_size=10):
     _, batch_len = data_source.shape
     n_batches = (batch_len -1) // seq_len
     for batch_n in range(n_batches):
-        data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
-        targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+        if args.cuda:
+            data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
+            targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+        else:
+            data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
+            targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
         #print len(data), len(targets)
         #print data.size()
 
         #print "evaluating!"
         #comment out this line to get the original lda vector
-        inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        if args.cuda:
+            inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+            inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        else:
+            inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word)
+            inp_topic = inp_topic.type(torch.FloatTensor)
         #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
-        inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+
         topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
@@ -241,17 +250,25 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         model.train()
-        data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
-        targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+        if args.cuda:
+            data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
+            targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+        else:
+            data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
+            targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
-        print (data.data.cpu().numpy())
         #print ('next batch')
         #Comment out this line to get the original lda vector
-        inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        if args.cuda:
+            inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+            inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        else:
+            inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word)
+            inp_topic = inp_topic.type(torch.FloatTensor)
         #coment the vector with zeros
         #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
-        inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+
         topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
