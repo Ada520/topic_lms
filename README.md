@@ -1,10 +1,7 @@
-# AWD-LSTM / AWD-QRNN Language Model
+# topic adapted LSTM for language models.
 
-### Averaged Stochastic Gradient Descent with Weight Dropped LSTM or QRNN
+### Topic adaptation for language modelling.
 
-This repository contains the code used for [Salesforce Research](https://einstein.ai/)'s [Regularizing and Optimizing LSTM Language Models](https://arxiv.org/abs/1708.02182) paper, originally forked from the [PyTorch word level language modeling example](https://github.com/pytorch/examples/tree/master/word_language_model).
-The model comes with instructions to train a word level language model over the Penn Treebank (PTB) and [WikiText-2](https://einstein.ai/research/the-wikitext-long-term-dependency-language-modeling-dataset) (WT2) datasets, though the model is likely extensible to many other datasets.
-The model can be composed of an LSTM or a [Quasi-Recurrent Neural Network](https://github.com/salesforce/pytorch-qrnn/) (QRNN) which is two or more times faster than the cuDNN LSTM in this setup while achieving equivalent or better accuracy.
 
 + Install PyTorch 0.2
 + Run `getdata.sh` to acquire the Penn Treebank and WikiText-2 datasets
@@ -14,24 +11,6 @@ The model can be composed of an LSTM or a [Quasi-Recurrent Neural Network](https
 
 If you use this code or our results in your research, please cite:
 
-```
-@article{merityRegOpt,
-  title={{Regularizing and Optimizing LSTM Language Models}},
-  author={Merity, Stephen and Keskar, Nitish Shirish and Socher, Richard},
-  journal={arXiv preprint arXiv:1708.02182},
-  year={2017}
-}
-```
-
-## Software Requirements
-
-Python 3 and PyTorch 0.2 are required for the current codebase.
-
-Included below are hyper parameters to get equivalent or better results to those included in the original paper.
-
-If you need to use an earlier version of the codebase, the original code and hyper parameters accessible at the [PyTorch==0.1.12](https://github.com/salesforce/awd-lstm-lm/tree/PyTorch%3D%3D0.1.12) release, with Python 3 and PyTorch 0.1.12 are required.
-If you are using Anaconda, installation of PyTorch 0.1.12 can be achieved via:
-`conda install pytorch=0.1.12 -c soumith`.
 
 ## Experiments
 
@@ -101,8 +80,6 @@ If speed is a major issue, SGD converges more quickly than our non-monotonically
 
 For full details, refer to the [PyTorch QRNN repository](https://github.com/salesforce/pytorch-qrnn).
 
-### Details of the LSTM optimization
+### preprocessing taken from https://github.com/salesforce/awd-lstm-lm
 
-All the augmentations to the LSTM, including our variant of [DropConnect (Wan et al. 2013)](https://cs.nyu.edu/~wanli/dropc/dropc.pdf) termed weight dropping which adds recurrent dropout, allow for the use of NVIDIA's cuDNN LSTM implementation.
-PyTorch will automatically use the cuDNN backend if run on CUDA with cuDNN installed.
-This ensures the model is fast to train even when convergence may take many hundreds of epochs.
+
