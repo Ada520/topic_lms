@@ -88,7 +88,7 @@ if torch.cuda.is_available():
 ###############################################################################
 
 
-seq_len = 30
+seq_len = 35
 train_path = os.path.expanduser('~/topic_lms/data/apnews/train_transform.pkl')
 valid_path = os.path.expanduser('~/topic_lms/data/apnews/val_transform.pkl')
 test_path = os.path.expanduser('~/topic_lms/data/apnews/test_transform.pkl')
@@ -96,8 +96,8 @@ vocab = os.path.expanduser('~/topic_lms/data/apnews/vocab.pkl')
 lda_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
 lda_dict_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_dict')
-eval_batch_size = 64
-test_batch_size = 64
+eval_batch_size = 20
+test_batch_size = 20
 
 with open(train_path, 'rb') as f:
     train_data = pickle.load(f)

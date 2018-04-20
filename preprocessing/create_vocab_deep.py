@@ -126,7 +126,7 @@ def preprocess_data(corpus):
         pickle.dump(vocab, f)
     logger.info("Length of vocabulary:" + str(len(vocab)))
     train = get_sent2id(train, vocab)
-    write_batches(train, 64, 30, out_train)
+    write_batches(train, 20, 35, out_train)
 
     # write valid
     valid = read_dataset(valid_path)
