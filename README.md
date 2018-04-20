@@ -80,6 +80,6 @@ If speed is a major issue, SGD converges more quickly than our non-monotonically
 
 For full details, refer to the [PyTorch QRNN repository](https://github.com/salesforce/pytorch-qrnn).
 
-### preprocessing taken from https://github.com/salesforce/awd-lstm-lm
+### inspired from https://github.com/salesforce/awd-lstm-lm
 
 
