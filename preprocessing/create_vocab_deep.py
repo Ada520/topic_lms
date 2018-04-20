@@ -78,7 +78,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
         pickle.dump(data, f)
 
 
-def create_vocab(train, min_freq):
+def create_vocab(dataset, min_freq):
     """
     create vocab given training path
     :param train_path:
@@ -87,7 +87,7 @@ def create_vocab(train, min_freq):
     vocab = defaultdict(float)
     out_vocab = []
     #get word frequencies
-    for sent in train:
+    for sent in dataset:
         for word in sent.split():
             vocab[word] += 1.0
 
@@ -133,6 +133,7 @@ def preprocess_data(corpus):
     valid = read_dataset(valid_path)
     valid = get_flattened_proc(valid)
     valid = get_sent2id(valid, vocab)
+    print (vocab[0])
     write_batches(valid, 64, 30, out_valid)
 
     # write test
@@ -141,6 +142,7 @@ def preprocess_data(corpus):
     test = read_dataset(test_path)
     test = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
+    print (test[0])
     write_batches(test, 64, 30, out_test)
 
 
