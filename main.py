@@ -89,13 +89,13 @@ if torch.cuda.is_available():
 
 
 seq_len = 30
-train_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/train_transform.pkl')
-valid_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/val_transform.pkl')
-test_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/test_transform.pkl')
-vocab = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/vocab_bnc')
-lda_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/lda_models/lda_model')
+train_path = os.path.expanduser('~/topic_lms/data/apnews/train_transform.pkl')
+valid_path = os.path.expanduser('~/topic_lms/data/apnews/val_transform.pkl')
+test_path = os.path.expanduser('~/topic_lms/data/apnews/test_transform.pkl')
+vocab = os.path.expanduser('~/topic_lms/data/apnews/vocab_bnc')
+lda_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('/shared/home/DebanjanChaudhuri/topic_lms/data/apnews/lda_models/lda_dict')
+lda_dict_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_dict')
 eval_batch_size = 64
 test_batch_size = 64
 
