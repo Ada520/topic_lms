@@ -109,7 +109,7 @@ def preprocess_data(corpus):
     # process train and get vocab
     train = read_dataset(train_path)
     train = get_flattened_proc(train)
-    vocab = create_vocab(train)
+    vocab = create_vocab(train, 10)
     vocab[unk_symbol] = len(vocab) + 1
     #write vocab into file.
     with open(out_vocab, 'wb') as f:
