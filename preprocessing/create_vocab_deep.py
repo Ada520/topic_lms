@@ -133,7 +133,7 @@ def preprocess_data(corpus):
     valid = read_dataset(valid_path)
     valid = get_flattened_proc(valid)
     valid = get_sent2id(valid, vocab)
-    print (vocab[0])
+    print (valid[0])
     write_batches(valid, 64, 30, out_valid)
 
     # write test
