@@ -12,15 +12,18 @@ pad_symbol = "<pad>"
 start_symbol = "<go> "
 end_symbol = "<eos>"
 unk_symbol = "<unk>"
+
+
 def get_flattened_proc(dataset):
     """
 
     :param dataset:
     :return: flattened sentences for a corpus.
     """
-    sentences = [(start_symbol + sent + end_symbol).replace('\'','') for review in dataset for sent in review]
+    sentences = [(start_symbol + sent + end_symbol).replace('\'', '') for review in dataset for sent in review]
 
-    return sentences
+    return [word for sent in sentences for word in sent]
+
 
 def get_wid(word, vocab_d):
     """
@@ -37,7 +40,8 @@ def get_wid(word, vocab_d):
 
 def get_sent2id(doc, vocab_dict):
 
-    return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
+    return [get_wid(w, vocab_dict) for w in doc]
+
 
 def read_dataset(filename):
     """
@@ -50,6 +54,7 @@ def read_dataset(filename):
 
     out = [[sent for sent in doc.split('\n')[0].split('\t')] for doc in data]
     return out
+
 
 def write_batches(raw_data, batch_size, num_steps, save_path):
     """
@@ -68,6 +73,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     with open(save_path, 'wb') as f:
         pickle.dump(data, f)
 
+
 def create_vocab(train, min_freq):
     """
     create vocab given training path
@@ -77,9 +83,8 @@ def create_vocab(train, min_freq):
     vocab = defaultdict(float)
     out_vocab = []
     #get word frequencies
-    for sent in train:
-        for word in sent.split():
-            vocab[word] += 1.0
+    for word in train:
+        vocab[word] += 1.0
 
     for k, v in vocab.items():
         if v > min_freq:
@@ -132,6 +137,7 @@ def preprocess_data(corpus):
     test = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
     write_batches(test, 64, 30, out_test)
+
 
 if __name__ == '__main__':
     domains = ['bnc', 'imdb', 'apnews']
