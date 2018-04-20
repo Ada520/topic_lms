@@ -205,6 +205,7 @@ def evaluate(data_source, batch_size=10):
         targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
         #print len(data), len(targets)
         #print data.size()
+
         #print "evaluating!"
         #comment out this line to get the original lda vector
         inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
@@ -244,7 +245,7 @@ def train():
         targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
-        #print (data.data.cpu().numpy())
+        print (data.data.cpu().numpy())
         #print ('next batch')
         #Comment out this line to get the original lda vector
         inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
