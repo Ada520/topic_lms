@@ -30,7 +30,7 @@ def get_wid(word, vocab_d):
     :return:
     """
     try:
-        vocab_d[word]
+        return vocab_d[word]
     except KeyError:
         return vocab_d[unk_symbol]
 
