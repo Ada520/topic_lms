@@ -72,7 +72,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
     data = [np.array(chain(*dat)) for dat in data]
     print (len(data))
-    print (len(data[0]))
+    print (data[0])
     # Save numpy array to disk
     with open(save_path, 'wb') as f:
         pickle.dump(data, f)
