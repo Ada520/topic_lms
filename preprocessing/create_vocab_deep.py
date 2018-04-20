@@ -21,7 +21,7 @@ def get_flattened_proc(dataset):
     :param dataset:
     :return: flattened sentences for a corpus.
     """
-    sentences = [(start_symbol + sent.replace('\'', '').strip() + end_symbol) for review in dataset for sent in review]
+    sentences = [(start_symbol + sent.replace('\'', '') + end_symbol) for review in dataset for sent in review]
 
     return sentences
 
@@ -75,7 +75,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     print (data[0])
     # Save numpy array to disk
     with open(save_path, 'wb') as f:
-        pickle.dump(data, f)
+        pickle.dump(np.array(data), f)
 
 
 def create_vocab(dataset, min_freq):
