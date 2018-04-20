@@ -83,7 +83,7 @@ def create_vocab(train, min_freq):
     vocab = defaultdict(float)
     out_vocab = []
     #get word frequencies
-    for word in train:
+    for word in train.split():
         vocab[word] += 1.0
 
     for k, v in vocab.items():
