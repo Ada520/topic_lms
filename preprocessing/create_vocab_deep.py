@@ -21,9 +21,9 @@ def get_flattened_proc(dataset):
     :param dataset:
     :return: flattened sentences for a corpus.
     """
-    sentences = [(start_symbol + sent.replace('\'', '') + end_symbol) for review in dataset for sent in review]
+    sentences = [(start_symbol + sent.replace('\'', '') + end_symbol).split() for review in dataset for sent in review]
 
-    return sentences
+    return [word for sentence in sentences for word in sentence]
 
 
 def get_wid(word, vocab_d):
@@ -41,7 +41,7 @@ def get_wid(word, vocab_d):
 
 def get_sent2id(doc, vocab_dict):
 
-    return [[get_wid(w, vocab_dict) for w in sent.split()] for sent in doc]
+    return [get_wid(w, vocab_dict) for w in doc]
 
 
 def read_dataset(filename):
@@ -70,12 +70,12 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     batch_len = data_len // batch_size # total number of batches
 
     data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
-    data = [np.array([d for ds in dat for d in ds]) for dat in data]
+    #data = [np.array([d for ds in dat for d in ds]) for dat in data]
     print (len(data))
     print (data[0])
     # Save numpy array to disk
     with open(save_path, 'wb') as f:
-        pickle.dump(np.array(data), f)
+        pickle.dump(data, f)
 
 
 def create_vocab(dataset, min_freq):
@@ -87,9 +87,9 @@ def create_vocab(dataset, min_freq):
     vocab = defaultdict(float)
     out_vocab = []
     #get word frequencies
-    for sent in dataset:
-        for word in sent.split():
-            vocab[word] += 1.0
+
+    for word in dataset:
+        vocab[word] += 1.0
 
     for k, v in vocab.items():
         if v > min_freq:
@@ -126,14 +126,12 @@ def preprocess_data(corpus):
         pickle.dump(vocab, f)
     logger.info("Length of vocabulary:" + str(len(vocab)))
     train = get_sent2id(train, vocab)
-    print (train[0])
     write_batches(train, 64, 30, out_train)
 
     # write valid
     valid = read_dataset(valid_path)
     valid = get_flattened_proc(valid)
     valid = get_sent2id(valid, vocab)
-    print (valid[0])
     write_batches(valid, 64, 30, out_valid)
 
     # write test
@@ -142,7 +140,6 @@ def preprocess_data(corpus):
     test = read_dataset(test_path)
     test = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
-    print (test[0])
     write_batches(test, 64, 30, out_test)
 
 
