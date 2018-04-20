@@ -22,7 +22,7 @@ def get_flattened_proc(dataset):
     """
     sentences = [(start_symbol + sent + end_symbol).replace('\'', '') for review in dataset for sent in review]
 
-    return [word for sent in sentences for word in sent]
+    return sentences
 
 
 def get_wid(word, vocab_d):
