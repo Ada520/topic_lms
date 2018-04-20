@@ -83,7 +83,7 @@ def create_vocab(train, min_freq):
     vocab = defaultdict(float)
     out_vocab = []
     #get word frequencies
-    for word in train.split():
+    for word in train:
         vocab[word] += 1.0
 
     for k, v in vocab.items():
@@ -114,6 +114,7 @@ def preprocess_data(corpus):
     # process train and get vocab
     train = read_dataset(train_path)
     train = get_flattened_proc(train)
+    print (train[0])
     vocab = create_vocab(train, 10)
     vocab[unk_symbol] = len(vocab) + 1
     #write vocab into file.
