@@ -198,8 +198,8 @@ def evaluate(data_source, batch_size=10):
         model.reset()
     total_loss = 0
     hidden = model.init_hidden(args.batch_size)
-    _, batch_len = data_source.shape
-    n_batches = (batch_len -1) // seq_len
+    batch_len = data_source.shape
+    n_batches = (batch_len[0] -1) // seq_len
     for batch_n in range(n_batches):
         data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
         targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
@@ -223,7 +223,7 @@ def evaluate(data_source, batch_size=10):
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
-    return total_loss[0] / (data_source.shape[1])
+    return total_loss[0] / (batch_len[0])
 
 
 def train():
@@ -233,7 +233,7 @@ def train():
     start_time = time.time()
     hidden = model.init_hidden(args.batch_size)
     batch_len = train_data.shape
-    n_batches = (batch_len -1) // seq_len
+    n_batches = (batch_len[0] -1) // seq_len
     for batch_n in range(n_batches):
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
 
