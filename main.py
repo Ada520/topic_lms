@@ -244,7 +244,7 @@ def train():
         targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
-        print data.size()
+        print (data.size())
         print( targets.size())
         #print (data.data.cpu().numpy())
         #print ('next batch')
