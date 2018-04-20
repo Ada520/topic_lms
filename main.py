@@ -232,7 +232,7 @@ def train():
     total_loss = 0
     start_time = time.time()
     hidden = model.init_hidden(args.batch_size)
-    m, batch_len = train_data.shape
+    batch_len = train_data.shape
     n_batches = (batch_len -1) // seq_len
     for batch_n in range(n_batches):
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
