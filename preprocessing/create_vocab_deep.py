@@ -40,7 +40,7 @@ def get_wid(word, vocab_d):
 
 def get_sent2id(doc, vocab_dict):
 
-    return [get_wid(w, vocab_dict) for w in doc]
+    return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
 
 
 def read_dataset(filename):
@@ -69,6 +69,8 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     batch_len = data_len // batch_size # total number of batches
 
     data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
+    data = lambda l: [item for sub in data for item in sub]
+    print (data[0])
     # Save numpy array to disk
     with open(save_path, 'wb') as f:
         pickle.dump(data, f)
@@ -83,8 +85,9 @@ def create_vocab(train, min_freq):
     vocab = defaultdict(float)
     out_vocab = []
     #get word frequencies
-    for word in train:
-        vocab[word] += 1.0
+    for sent in train:
+        for word in sent.split():
+            vocab[word] += 1.0
 
     for k, v in vocab.items():
         if v > min_freq:
@@ -114,7 +117,6 @@ def preprocess_data(corpus):
     # process train and get vocab
     train = read_dataset(train_path)
     train = get_flattened_proc(train)
-    print (train[0])
     vocab = create_vocab(train, 10)
     vocab[unk_symbol] = len(vocab) + 1
     #write vocab into file.
@@ -138,7 +140,6 @@ def preprocess_data(corpus):
     test = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
     write_batches(test, 64, 30, out_test)
-
 
 if __name__ == '__main__':
     domains = ['bnc', 'imdb', 'apnews']
