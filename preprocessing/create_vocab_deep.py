@@ -118,8 +118,9 @@ def preprocess_data(corpus):
     out_vocab = os.path.expanduser('~/topic_lms/data/' + corpus + '/vocab.pkl')
     # process train and get vocab
     train = read_dataset(train_path)
-    print (train[0])
+    print (train[0][0])
     train = get_flattened_proc(train)
+    print (train[0])
     vocab = create_vocab(train, 10)
     vocab[unk_symbol] = len(vocab) + 1
     #write vocab into file.
@@ -132,8 +133,9 @@ def preprocess_data(corpus):
 
     # write valid
     valid = read_dataset(valid_path)
-    print (valid[0])
+    print (valid[0][0])
     valid = get_flattened_proc(valid)
+    print (valid[0])
     valid = get_sent2id(valid, vocab)
     print (valid[0])
     write_batches(valid, 64, 30, out_valid)
@@ -142,8 +144,9 @@ def preprocess_data(corpus):
 
     # write valid
     test = read_dataset(test_path)
-    print (test[0])
+    print (test[0][0])
     test = get_flattened_proc(test)
+    print (test[0])
     test = get_sent2id(test, vocab)
     print (test[0])
     write_batches(test, 64, 30, out_test)
