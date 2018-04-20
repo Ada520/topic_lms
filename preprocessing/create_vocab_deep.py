@@ -21,7 +21,7 @@ def get_flattened_proc(dataset):
     :param dataset:
     :return: flattened sentences for a corpus.
     """
-    sentences = [(start_symbol + sent + end_symbol).replace('\'', '') for review in dataset for sent in review]
+    sentences = [(start_symbol + sent.replace('\'', '') + end_symbol) for review in dataset for sent in review]
 
     return sentences
 
@@ -70,7 +70,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     batch_len = data_len // batch_size # total number of batches
 
     data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
-    data = [np.array(chain(*dat)) for dat in data]
+    data = [np.array([d for ds in dat for d in ds]) for dat in data]
     print (len(data))
     print (data[0])
     # Save numpy array to disk
