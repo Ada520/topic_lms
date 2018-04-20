@@ -69,7 +69,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     batch_len = data_len // batch_size # total number of batches
 
     data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
-    data = lambda l: [item for sub in data for item in sub]
+    data = [item for sub in data for item in sub]
     print (data[0])
     # Save numpy array to disk
     with open(save_path, 'wb') as f:
