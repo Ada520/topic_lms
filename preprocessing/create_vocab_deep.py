@@ -3,6 +3,7 @@ from collections import defaultdict
 import os
 import numpy as np
 import logging
+from itertools import chain
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
@@ -69,8 +70,9 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     batch_len = data_len // batch_size # total number of batches
 
     data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
-    data = [item for sub in data for item in sub]
-    print (data[0])
+    data = [np.array(chain(*dat)) for dat in data]
+    print (len(data))
+    print (len(data[0]))
     # Save numpy array to disk
     with open(save_path, 'wb') as f:
         pickle.dump(data, f)
@@ -140,6 +142,7 @@ def preprocess_data(corpus):
     test = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
     write_batches(test, 64, 30, out_test)
+
 
 if __name__ == '__main__':
     domains = ['bnc', 'imdb', 'apnews']
