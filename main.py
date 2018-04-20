@@ -89,13 +89,13 @@ if torch.cuda.is_available():
 
 
 seq_len = 30
-train_path = os.path.expanduser('~/topic_lms/data/bnc/train_transform.pkl')
-valid_path = os.path.expanduser('~/topic_lms/data/bnc/val_transform.pkl')
-test_path = os.path.expanduser('~/topic_lms/data/bnc/test_transform.pkl')
-vocab = os.path.expanduser('~/topic_lms/data/bnc/vocab.pkl')
-lda_path = os.path.expanduser('~/topic_lms/data/bnc/lda_models/lda_model')
+train_path = os.path.expanduser('~/topic_lms/data/imdb/train_transform.pkl')
+valid_path = os.path.expanduser('~/topic_lms/data/imdb/val_transform.pkl')
+test_path = os.path.expanduser('~/topic_lms/data/imdb/test_transform.pkl')
+vocab = os.path.expanduser('~/topic_lms/data/imdb/vocab.pkl')
+lda_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('~/topic_lms/data/bnc/lda_models/lda_dict')
+lda_dict_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_dict')
 eval_batch_size = 64
 test_batch_size = 64
 
