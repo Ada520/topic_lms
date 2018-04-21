@@ -149,7 +149,7 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 
 ntokens = len(vocab) + 1
 if args.mit_topic:
-    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, pretrained_emb=fast_text_vec, 50)
+    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, pretrained_emb=fast_text_vec, topic_size=50)
 else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 if args.cuda:
