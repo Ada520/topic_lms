@@ -122,7 +122,7 @@ lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 # create pretrained emb file from
 ##############################################################################
 
-fast_text_vec = np.zeros(len(w2id), 400)
+fast_text_vec = np.zeros((len(w2id), 400))
 with open(fast_text_file, 'r') as f:
     fst_txt = f.readlines()
 
