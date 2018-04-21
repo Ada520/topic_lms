@@ -114,6 +114,7 @@ with open(vocab, 'rb') as f:
 
 w2id = vocab
 idx2word = {v: k for k, v in w2id.items()}
+ntokens = len(vocab) + 1
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
@@ -122,7 +123,7 @@ lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 # create pretrained emb file from
 ##############################################################################
 
-fast_text_vec = np.zeros((len(w2id), 400))
+fast_text_vec = np.zeros((ntokens, 400))
 with open(fast_text_file, 'r') as f:
     fst_txt = f.readlines()
 
@@ -147,7 +148,7 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 # Build the model
 ###############################################################################
 
-ntokens = len(vocab) + 1
+
 if args.mit_topic:
     model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, pretrained_emb=fast_text_vec, topic_size=50)
 else:
