@@ -89,13 +89,14 @@ if torch.cuda.is_available():
 
 
 seq_len = 30
-train_path = os.path.expanduser('~/topic_lms/data/imdb/train_transform.pkl')
-valid_path = os.path.expanduser('~/topic_lms/data/imdb/val_transform.pkl')
-test_path = os.path.expanduser('~/topic_lms/data/imdb/test_transform.pkl')
-vocab = os.path.expanduser('~/topic_lms/data/imdb/vocab.pkl')
-lda_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_model')
+train_path = os.path.expanduser('~/topic_lms/data/apnews/train_transform.pkl')
+valid_path = os.path.expanduser('~/topic_lms/data/apnews/val_transform.pkl')
+test_path = os.path.expanduser('~/topic_lms/data/apnews/test_transform.pkl')
+vocab = os.path.expanduser('~/topic_lms/data/apnews/vocab.pkl')
+lda_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_dict')
+lda_dict_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_dict')
+fast_text_file = os.path.expanduser('~/topic_lms/data/apnews/apnews_ft.vec')
 eval_batch_size = 64
 test_batch_size = 64
 
@@ -117,6 +118,25 @@ lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
+##############################################################################
+# create pretrained emb file from
+##############################################################################
+
+fast_text_vec = np.zeros(len(w2id), 400)
+with open(fast_text_file, 'r') as f:
+    fst_txt = f.readlines()
+
+for l in fst_txt:
+    line = l.split('\n')[0]
+    word = line.split()[0]
+    vec = line.split()[1:]
+    try:
+        fast_text_vec[w2id[word]] = vec
+    except KeyError:
+        continue
+
+print (fast_text_vec[w2id['news']])
+
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
 
@@ -129,7 +149,7 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 
 ntokens = len(vocab) + 1
 if args.mit_topic:
-    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, 50)
+    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, pretrained_emb=fast_text_vec, 50)
 else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 if args.cuda:
