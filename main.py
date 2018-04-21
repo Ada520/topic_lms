@@ -135,6 +135,9 @@ for l in fst_txt:
         fast_text_vec[w2id[word]] = vec
     except KeyError:
         continue
+    except ValueError:
+        print (word)
+        continue
 
 print (fast_text_vec[w2id['news']])
 
