@@ -139,7 +139,8 @@ for l in fst_txt:
         print (word)
         continue
 
-print (fast_text_vec[w2id['news']])
+#print (fast_text_vec[w2id['news']])
+fast_text_vec = torch.from_numpy(fast_text_vec.astype(np.float32))
 
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
