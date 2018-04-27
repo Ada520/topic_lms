@@ -25,7 +25,7 @@ def get_flattened_proc(dataset):
     :param dataset:
     :return: flattened sentences for a corpus.
     """
-    sentences = [(start_symbol + sent.replace('\'', '') + end_symbol).split() for review in dataset for sent in review]
+    sentences = [(start_symbol + sent + end_symbol).split() for review in dataset for sent in review]
 
     return [word for sentence in sentences for word in sentence], sentences
 
@@ -130,7 +130,7 @@ def create_vocab(dataset, min_freq):
 
     #logger.info('Created vocabulary!')
 
-    return dict(zip(out_vocab, range(len(out_vocab))))
+    return dict(zip(out_vocab, range(1, len(out_vocab) + 1)))
 
 
 def preprocess_data(corpus):
