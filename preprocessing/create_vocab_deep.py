@@ -106,7 +106,8 @@ def create_vocab(dataset, min_freq):
     sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
     ipdb.set_trace()
     n_words = len(out_vocab)
-    n_most_frequent = (n_words / 100) / 100
+    n_most_frequent = (n_words / 100) / 10
+    print(n_words - n_most_frequent)
 
     #logger.info('Created vocabulary!')
 
