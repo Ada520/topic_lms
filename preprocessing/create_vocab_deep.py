@@ -1,4 +1,5 @@
 import pickle
+import itertools
 import pandas as pd
 from collections import Counter
 import ipdb
@@ -26,8 +27,7 @@ def get_flattened_proc(dataset):
     """
     sentences = [(start_symbol + sent.replace('\'', '') + end_symbol).split() for review in dataset for sent in review]
 
-    # return [word for sentence in sentences for word in sentence]
-    return [word for sentence in sentences for word in sentence]
+    return [word for sentence in sentences for word in sentence], sentences
 
 
 def get_wid(word, vocab_d):
@@ -45,7 +45,12 @@ def get_wid(word, vocab_d):
 
 def get_sent2id(doc, vocab_dict):
 
-    return [get_wid(w, vocab_dict) for w in doc]
+    # return [get_wid(w, vocab_dict)
+    #         for w in doc]
+
+    return [[get_wid(w, vocab_dict)
+            for w in sent]
+            for sent in doc]
 
 
 def read_dataset(filename):
@@ -61,7 +66,7 @@ def read_dataset(filename):
     return out
 
 
-def write_batches(raw_data, batch_size, num_steps, save_path):
+def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
     """
     write batches
     :param raw_data:
@@ -70,10 +75,24 @@ def write_batches(raw_data, batch_size, num_steps, save_path):
     :param save_path:
     :return:
     """
+    # Split long sentences into two parts
+    temp = [[sublist[:threshold], sublist[threshold:threshold+30], sublist[threshold+30:]]
+            if len(sublist) > threshold
+            else [sublist]
+            for sublist in raw_data]
+
+    temp_flat = [subsublist
+            for sublist in temp
+            for subsublist in sublist]
+
+    # Pad with zeros
+    padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
+
+    ipdb.set_trace()
     data_len = len(raw_data)
     batch_len = data_len // batch_size # total number of batches
 
-    data = np.reshape(raw_data[0: batch_size * batch_len], [batch_size, batch_len])
+    data = np.reshape(padded_data[0: batch_size * batch_len], [batch_size, batch_len])
     #data = [np.array([d for ds in dat for d in ds]) for dat in data]
     print (len(data))
     print (data[0])
@@ -101,17 +120,17 @@ def create_vocab(dataset, min_freq):
 
 
     # Step 2: map 0.1% of most common words to "rare"
-    word_freq = Counter(out_vocab)
-    series = pd.Series(word_freq)
-    sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
-    ipdb.set_trace()
-    n_words = len(out_vocab)
-    n_most_frequent = (n_words / 100) / 10
-    print(n_words - n_most_frequent)
+    # word_freq = Counter(out_vocab)
+    # series = pd.Series(word_freq)
+    # sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
+    # # ipdb.set_trace()
+    # n_words = len(out_vocab)
+    # n_most_frequent = (n_words / 100) / 10
+    # print(n_words - n_most_frequent)
 
     #logger.info('Created vocabulary!')
 
-    #return dict(zip(out_vocab, range(len(out_vocab))))
+    return dict(zip(out_vocab, range(len(out_vocab))))
 
 
 def preprocess_data(corpus):
@@ -132,10 +151,9 @@ def preprocess_data(corpus):
     out_vocab = os.path.expanduser('~/topic_lms/data/' + corpus + '/vocab.pkl')
 
     # process train and get vocab
-    # ipdb.set_trace()
     train = read_dataset(train_path)
-    train = get_flattened_proc(train)
-    vocab = create_vocab(train, 10)
+    train_flat, train = get_flattened_proc(train)
+    vocab = create_vocab(train_flat, 10)
     vocab[unk_symbol] = len(vocab) + 1
 
     # write vocab into file.
