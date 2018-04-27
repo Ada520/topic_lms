@@ -1,4 +1,7 @@
 import pickle
+import pandas as pd
+from collections import Counter
+import ipdb
 from collections import defaultdict
 import os
 import numpy as np
@@ -23,6 +26,7 @@ def get_flattened_proc(dataset):
     """
     sentences = [(start_symbol + sent.replace('\'', '') + end_symbol).split() for review in dataset for sent in review]
 
+    # return [word for sentence in sentences for word in sentence]
     return [word for sentence in sentences for word in sentence]
 
 
@@ -84,20 +88,29 @@ def create_vocab(dataset, min_freq):
     :param train_path:
     :return:
     """
+    # Step 1: map words with count < min_count to "rare"
     vocab = defaultdict(float)
     out_vocab = []
-    #get word frequencies
 
     for word in dataset:
         vocab[word] += 1.0
 
     for k, v in vocab.items():
-        if v > min_freq:
+        if v >= min_freq:
             out_vocab.append(k)
 
-    logger.info('Created vocabulary!')
 
-    return dict(zip(out_vocab, range(len(out_vocab))))
+    # Step 2: map 0.1% of most common words to "rare"
+    word_freq = Counter(out_vocab)
+    series = pd.Series(word_freq)
+    sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
+    ipdb.set_trace()
+    n_words = len(out_vocab)
+    n_most_frequent = (n_words / 100) / 100
+
+    #logger.info('Created vocabulary!')
+
+    #return dict(zip(out_vocab, range(len(out_vocab))))
 
 
 def preprocess_data(corpus):
@@ -116,27 +129,27 @@ def preprocess_data(corpus):
     out_valid = os.path.expanduser('~/topic_lms/data/' + corpus + '/val_transform.pkl')
 
     out_vocab = os.path.expanduser('~/topic_lms/data/' + corpus + '/vocab.pkl')
+
     # process train and get vocab
+    # ipdb.set_trace()
     train = read_dataset(train_path)
     train = get_flattened_proc(train)
     vocab = create_vocab(train, 10)
     vocab[unk_symbol] = len(vocab) + 1
-    #write vocab into file.
+
+    # write vocab into file.
     with open(out_vocab, 'wb') as f:
         pickle.dump(vocab, f)
+
     logger.info("Length of vocabulary:" + str(len(vocab)))
     train = get_sent2id(train, vocab)
     write_batches(train, 64, 30, out_train)
 
-    # write valid
     valid = read_dataset(valid_path)
     valid = get_flattened_proc(valid)
     valid = get_sent2id(valid, vocab)
     write_batches(valid, 64, 30, out_valid)
 
-    # write test
-
-    # write valid
     test = read_dataset(test_path)
     test = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
