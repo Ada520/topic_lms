@@ -7,6 +7,8 @@ from collections import defaultdict
 import os
 import numpy as np
 import logging
+
+ipdb.set_trace()
 from itertools import chain
 
 logger = logging.getLogger()
