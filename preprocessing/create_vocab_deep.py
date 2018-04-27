@@ -2,7 +2,7 @@ import pickle
 import itertools
 import pandas as pd
 from collections import Counter
-import ipdb
+#import ipdb
 from collections import defaultdict
 import os
 import numpy as np
@@ -63,7 +63,7 @@ def read_dataset(filename):
     with open(filename, 'r') as f:
         data = f.readlines()
 
-    out = [[sent for sent in doc.split('\n')[0].split('\t')] for doc in data]
+    out = [[sent for sent in doc.replace('\n', '').split('\t')] for doc in data]
     return out
 
 
@@ -89,7 +89,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
     # Pad with zeros
     padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
 
-    ipdb.set_trace()
+    #ipdb.set_trace()
     data_len = len(raw_data)
     batch_len = data_len // batch_size # total number of batches
 
@@ -116,7 +116,7 @@ def create_vocab(dataset, min_freq):
         vocab[word] += 1.0
 
     for k, v in vocab.items():
-        if v >= min_freq:
+        if v > min_freq:
             out_vocab.append(k)
 
 
