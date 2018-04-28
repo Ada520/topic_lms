@@ -1,8 +1,8 @@
 import pickle
+import ipdb
 import itertools
 import pandas as pd
 from collections import Counter
-#import ipdb
 from collections import defaultdict
 import os
 import numpy as np
@@ -77,24 +77,25 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
     :return:
     """
     # Split long sentences into two parts
-    temp = [[sublist[:threshold], sublist[threshold:threshold+30], sublist[threshold+30:]]
+    temp = [[sublist[:threshold], sublist[threshold:threshold+30], sublist[threshold+30:threshold+60], sublist[threshold+60:threshold+90], sublist[threshold+90:threshold+120], sublist[threshold+120:threshold+150], sublist[threshold+150:threshold+180], sublist[threshold+180:threshold:210], sublist[threshold+210:threshold+240], sublist[threshold+240:]]
             if len(sublist) > threshold
             else [sublist]
             for sublist in raw_data]
 
     temp_flat = [subsublist
             for sublist in temp
-            for subsublist in sublist]
+            for subsublist in sublist
+            if len(subsublist) > 0]
 
     # Pad with zeros
     padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
 
-    #ipdb.set_trace()
-    data_len = len(raw_data)
+    # data_len = len(raw_data)
+    data_len = len(temp_flat)
     batch_len = data_len // batch_size # total number of batches
 
-    data = np.reshape(padded_data[0: batch_size * batch_len], [batch_size, batch_len])
-    #data = [np.array([d for ds in dat for d in ds]) for dat in data]
+    # data = np.reshape(padded_data[0: batch_size * batch_len], [batch_size, batch_len])
+    data = padded_data[:batch_len]
     print (len(data))
     print (data[0])
     # Save numpy array to disk
@@ -116,22 +117,23 @@ def create_vocab(dataset, min_freq):
         vocab[word] += 1.0
 
     for k, v in vocab.items():
-        if v > min_freq:
+        if v >= min_freq:
             out_vocab.append(k)
 
-
+    ipdb.set_trace()
     # Step 2: map 0.1% of most common words to "rare"
-    # word_freq = Counter(out_vocab)
-    # series = pd.Series(word_freq)
-    # sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
-    # # ipdb.set_trace()
-    # n_words = len(out_vocab)
-    # n_most_frequent = (n_words / 100) / 10
-    # print(n_words - n_most_frequent)
+    word_freq = Counter(out_vocab)
+    series = pd.Series(word_freq)
+    sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
+    n_words = len(out_vocab)
+    n_most_frequent = int((n_words / 100) / 10)
+    new_out_vocab = series[n_most_frequent:]
+    new_out_vocab = pd.Index.tolist(new_out_vocab.index)
+    logger.info(f"New vocab size: {n_words - n_most_frequent}")
 
-    #logger.info('Created vocabulary!')
+    logger.info('Created vocabulary!')
 
-    return dict(zip(out_vocab, range(1, len(out_vocab) + 1)))
+    return dict(zip(new_out_vocab, range(1, len(new_out_vocab) + 1)))
 
 
 def preprocess_data(corpus):
@@ -166,7 +168,7 @@ def preprocess_data(corpus):
     write_batches(train, 64, 30, out_train)
 
     valid = read_dataset(valid_path)
-    valid = get_flattened_proc(valid)
+    valid_flat, valid = get_flattened_proc(valid)
     valid = get_sent2id(valid, vocab)
     write_batches(valid, 64, 30, out_valid)
 
