@@ -117,7 +117,7 @@ def create_vocab(dataset, min_freq):
         vocab[word] += 1.0
 
     for k, v in vocab.items():
-        if v >= min_freq:
+        if v > min_freq:
             out_vocab.append(k)
 
     # #ipdb.set_trace()
