@@ -120,20 +120,20 @@ def create_vocab(dataset, min_freq):
         if v >= min_freq:
             out_vocab.append(k)
 
-    ipdb.set_trace()
-    # Step 2: map 0.1% of most common words to "rare"
-    word_freq = Counter(out_vocab)
-    series = pd.Series(word_freq)
-    sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
-    n_words = len(out_vocab)
-    n_most_frequent = int((n_words / 100) / 10)
-    new_out_vocab = series[n_most_frequent:]
-    new_out_vocab = pd.Index.tolist(new_out_vocab.index)
-    logger.info(f"New vocab size: {n_words - n_most_frequent}")
+    # #ipdb.set_trace()
+    # # Step 2: map 0.1% of most common words to "rare"
+    # word_freq = Counter(out_vocab)
+    # series = pd.Series(word_freq)
+    # sorted_word_freq = series.sort_values(ascending=False)#[:vocab_size]
+    # n_words = len(out_vocab)
+    # n_most_frequent = int((n_words / 100) / 10)
+    # new_out_vocab = series[n_most_frequent:]
+    # new_out_vocab = pd.Index.tolist(new_out_vocab.index)
+    # logger.info(f"New vocab size: {n_words - n_most_frequent}")
 
     logger.info('Created vocabulary!')
 
-    return dict(zip(new_out_vocab, range(1, len(new_out_vocab) + 1)))
+    return dict(zip(out_vocab, range(1, len(out_vocab) + 1)))
 
 
 def preprocess_data(corpus):
