@@ -49,9 +49,7 @@ def get_sent2id(doc, vocab_dict):
     # return [get_wid(w, vocab_dict)
     #         for w in doc]
 
-    return [[get_wid(w, vocab_dict)
-            for w in sent]
-            for sent in doc]
+    return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
 
 
 def read_dataset(filename):
@@ -173,7 +171,7 @@ def preprocess_data(corpus):
     write_batches(valid, 64, 30, out_valid)
 
     test = read_dataset(test_path)
-    test = get_flattened_proc(test)
+    test_flat, test  = get_flattened_proc(test)
     test = get_sent2id(test, vocab)
     write_batches(test, 64, 30, out_test)
 
