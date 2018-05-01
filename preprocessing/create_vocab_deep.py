@@ -85,20 +85,24 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
             for subsublist in sublist
             if len(subsublist) > 0]
 
-    # Pad with zeros
-    padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
+    # Save list to disk
+    with open(save_path, 'wb') as f:
+        pickle.dump(temp_flat, f)
+
+    # # Pad with zeros
+    # padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
 
     # data_len = len(raw_data)
-    data_len = len(temp_flat)
-    batch_len = data_len // batch_size # total number of batches
+    # data_len = len(temp_flat)
+    # batch_len = data_len // batch_size # total number of batches
 
-    # data = np.reshape(padded_data[0: batch_size * batch_len], [batch_size, batch_len])
-    data = padded_data[:batch_len]
-    print (len(data))
-    print (data[0])
+    # # data = np.reshape(padded_data[0: batch_size * batch_len], [batch_size, batch_len])
+    # data = padded_data[:batch_len]
+    # print (len(data))
+    # print (data[0])
     # Save numpy array to disk
-    with open(save_path, 'wb') as f:
-        pickle.dump(data, f)
+    # with open(save_path, 'wb') as f:
+    #     pickle.dump(data, f)
 
 
 def create_vocab(dataset, min_freq):
