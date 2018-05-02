@@ -206,16 +206,15 @@ def evaluate(data_source, batch_size=10):
     n_batches = (batch_len -1) // seq_len
 
     for batch_n in range(0, len(data_source), args.batch_size):
-        sub = train_data[batch_n: batch_n+args.batch_size]
+        sub = train_data[batch_n: batch_n + args.batch_size]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
         if args.cuda:
             #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-            data = Variable(torch.from_numpy(padded.transpose(0, 1))).cuda()
-            print (data)
-            targets = Variable(torch.from_numpy(targets.transpose(0, 1).flatten())).cuda()
+            data = Variable(torch.from_numpy(padded.T)).cuda()
+            targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
         else:
             #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
             #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
@@ -264,23 +263,22 @@ def train():
 
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
-        sub = train_data[batch_n: batch_n+args.batch_size]
-        padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0)))
-        print (padded.shape)
+        sub = train_data[batch_n: batch_n + args.batch_size]
+        padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
+        #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-            data = Variable(torch.from_numpy(padded)).cuda()
-
-            targets = Variable(torch.from_numpy(targets.transpose(0, 1).flatten())).cuda()
+            data = Variable(torch.from_numpy(padded.T)).cuda()
+            targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
         else:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
-            data = Variable(torch.from_numpy(padded.transpose(0, 1)))
-            targets = Variable(torch.from_numpy(targets.transpose(0, 1).flatten()))
+            data = Variable(torch.from_numpy(padded.T))
+            targets = Variable(torch.from_numpy(targets.T.flatten()))
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         #print ('next batch')
