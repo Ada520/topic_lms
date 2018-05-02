@@ -121,7 +121,7 @@ lda_model = models.LdaModel.load(lda_path)
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
 
-print (valid_data.shape, train_data.shape, test_data.shape)
+#print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
 
 #val_data = batchify(corpus.valid, eval_batch_size, args)
