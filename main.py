@@ -89,7 +89,7 @@ if torch.cuda.is_available():
 ###############################################################################
 # Load data
 ###############################################################################
-
+print ('Processing domain: '+ args.domain)
 
 seq_len = 30
 train_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/train_transform.pkl')
