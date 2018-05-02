@@ -80,7 +80,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
             else [sublist]
             for sublist in raw_data]
 
-    temp_flat = [subsublist[:30]
+    temp_flat = [subsublist[:threshold]
             for sublist in temp
             for subsublist in sublist
             if len(subsublist) > 0]
