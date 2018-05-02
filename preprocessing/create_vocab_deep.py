@@ -80,7 +80,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
             else [sublist]
             for sublist in raw_data]
 
-    temp_flat = [subsublist
+    temp_flat = [subsublist[:30]
             for sublist in temp
             for subsublist in sublist
             if len(subsublist) > 0]
@@ -90,7 +90,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
         pickle.dump(temp_flat, f)
 
     # # Pad with zeros
-    # padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
+    #padded_data = np.array(list(itertools.zip_longest(*temp_flat, fillvalue=0))).T
 
     # data_len = len(raw_data)
     # data_len = len(temp_flat)
