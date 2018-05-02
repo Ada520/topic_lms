@@ -144,7 +144,7 @@ total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[
 print(f'Args: {args}')
 print(f'Model total parameters: {total_params}')
 
-criterion = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss(ignore_index=0)
 
 ###############################################################################
 # get lda vectors
