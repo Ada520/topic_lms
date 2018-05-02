@@ -73,6 +73,8 @@ parser.add_argument('--wdecay', type=float, default=1.2e-6,
                     help='weight decay applied to all weights')
 parser.add_argument('--mit-topic', type=bool, default=True,
                     help='with additional topic embedding')
+parser.add_argument('--domain', type=str, default='apnews',
+                    help='with additional topic embedding')
 args = parser.parse_args()
 
 # Set the random seed manually for reproducibility.
@@ -90,14 +92,14 @@ if torch.cuda.is_available():
 
 
 seq_len = 30
-train_path = os.path.expanduser('~/topic_lms/data/imdb/train_transform.pkl')
-valid_path = os.path.expanduser('~/topic_lms/data/imdb/val_transform.pkl')
-test_path = os.path.expanduser('~/topic_lms/data/imdb/test_transform.pkl')
-vocab = os.path.expanduser('~/topic_lms/data/imdb/vocab.pkl')
-lda_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_model')
+train_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/train_transform.pkl')
+valid_path = os.path.expanduser('~/topic_lms/data/'+ args.domain + '/val_transform.pkl')
+test_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/test_transform.pkl')
+vocab = os.path.expanduser('~/topic_lms/data/' + args.domain + '/vocab.pkl')
+lda_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_dict')
-fast_text_file = os.path.expanduser('~/topic_lms/data/imdb/apnews_ft.vec')
+lda_dict_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/lda_models/lda_dict')
+#fast_text_file = os.path.expanduser('~/topic_lms/data/imdb/apnews_ft.vec')
 eval_batch_size = 64
 test_batch_size = 64
 
