@@ -12,6 +12,7 @@ import model
 import os
 from gensim import models
 import gensim
+import itertools
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 """
@@ -89,14 +90,14 @@ if torch.cuda.is_available():
 
 
 seq_len = 30
-train_path = os.path.expanduser('~/topic_lms/data/apnews/train_transform.pkl')
-valid_path = os.path.expanduser('~/topic_lms/data/apnews/val_transform.pkl')
-test_path = os.path.expanduser('~/topic_lms/data/apnews/test_transform.pkl')
-vocab = os.path.expanduser('~/topic_lms/data/apnews/vocab.pkl')
-lda_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_model')
+train_path = os.path.expanduser('~/topic_lms/data/imdb/train_transform.pkl')
+valid_path = os.path.expanduser('~/topic_lms/data/imdb/val_transform.pkl')
+test_path = os.path.expanduser('~/topic_lms/data/imdb/test_transform.pkl')
+vocab = os.path.expanduser('~/topic_lms/data/imdb/vocab.pkl')
+lda_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
-lda_dict_path = os.path.expanduser('~/topic_lms/data/apnews/lda_models/lda_dict')
-fast_text_file = os.path.expanduser('~/topic_lms/data/apnews/apnews_ft.vec')
+lda_dict_path = os.path.expanduser('~/topic_lms/data/imdb/lda_models/lda_dict')
+fast_text_file = os.path.expanduser('~/topic_lms/data/imdb/apnews_ft.vec')
 eval_batch_size = 64
 test_batch_size = 64
 
@@ -119,28 +120,6 @@ lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
-##############################################################################
-# create pretrained emb file from
-##############################################################################
-
-fast_text_vec = np.zeros((ntokens, 400))
-with open(fast_text_file, 'r') as f:
-    fst_txt = f.readlines()
-
-for l in fst_txt:
-    line = l.split('\n')[0]
-    word = line.split()[0]
-    vec = line.split()[1:]
-    try:
-        fast_text_vec[w2id[word]] = vec
-    except KeyError:
-        continue
-    except ValueError:
-        print (word)
-        continue
-
-#print (fast_text_vec[w2id['news']])
-fast_text_vec = torch.from_numpy(fast_text_vec.astype(np.float32))
 
 print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -154,7 +133,7 @@ print (valid_data.shape, train_data.shape, test_data.shape)
 
 
 if args.mit_topic:
-    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, pretrained_emb=fast_text_vec, topic_size=50)
+    model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, topic_size=50)
 else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 if args.cuda:
@@ -225,13 +204,22 @@ def evaluate(data_source, batch_size=10):
     hidden = model.init_hidden(args.batch_size)
     _, batch_len = data_source.shape
     n_batches = (batch_len -1) // seq_len
-    for batch_n in range(n_batches):
+
+    for batch_n in range(0, len(data_source), args.batch_size):
+        sub = train_data[batch_n: batch_n+args.batch_size]
+        padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
+        targets = np.roll(padded, -1)
+        targets[:, -1] = 0
         if args.cuda:
-            data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
-            targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+            #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
+            #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+            data = Variable(torch.from_numpy(padded)).cuda()
+            targets = Variable(torch.from_numpy(targets).flatten()).cuda()
         else:
-            data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
-            targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
+            #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
+            #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
+            data = Variable(torch.from_numpy(padded))
+            targets = Variable(torch.from_numpy(targets).flatten())
         #print len(data), len(targets)
         #print data.size()
 
@@ -267,20 +255,29 @@ def train():
     total_loss = 0
     start_time = time.time()
     hidden = model.init_hidden(args.batch_size)
-    m, batch_len = train_data.shape
-    n_batches = (batch_len -1) // seq_len
-    for batch_n in range(n_batches):
+    #m, batch_len = train_data.shape
+    #n_batches = (batch_len -1) // seq_len
+    data_len = len(train_data)
+    for batch_n in range(0, data_len, args.batch_size):
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
 
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
+        sub = train_data[batch_n: batch_n+args.batch_size]
+        padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
+        targets = np.roll(padded, -1)
+        targets[:, -1] = 0
         model.train()
         if args.cuda:
-            data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
-            targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+            # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
+            # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+            data = Variable(torch.from_numpy(padded)).cuda()
+            targets = Variable(torch.from_numpy(targets).flatten()).cuda()
         else:
-            data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
-            targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
+            # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
+            # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
+            data = Variable(torch.from_numpy(padded))
+            targets = Variable(torch.from_numpy(targets).flatten())
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         #print ('next batch')
