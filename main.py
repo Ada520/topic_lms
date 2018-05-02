@@ -265,7 +265,7 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n+args.batch_size]
-        padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
+        padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0)))
         print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
