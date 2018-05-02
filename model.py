@@ -150,7 +150,7 @@ class RNNModel_mit_topic(nn.Module):
         self.hdrop = nn.Dropout(dropouth)
         self.drop = nn.Dropout(dropout)
         self.topic_size = topic_size
-        self.encoder = nn.Embedding(ntoken, ninp)
+        self.encoder = nn.Embedding(ntoken, ninp, padding_idx=0)
         assert rnn_type in ['LSTM', 'QRNN', 'GRU'], 'RNN type is not supported'
         if rnn_type == 'LSTM':
             self.rnns = [LSTMtopicCell(ninp if l == 0 else nhid, nhid if l != nlayers - 1 else (ninp if tie_weights else nhid), bias=True, topic_size=self.topic_size) for l in range(nlayers)]
