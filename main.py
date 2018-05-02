@@ -214,6 +214,7 @@ def evaluate(data_source, batch_size=10):
             #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
             data = Variable(torch.from_numpy(padded.transpose(0, 1))).cuda()
+            print (data)
             targets = Variable(torch.from_numpy(targets.transpose(0, 1).flatten())).cuda()
         else:
             #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
