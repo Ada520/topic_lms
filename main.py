@@ -266,14 +266,15 @@ def train():
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n+args.batch_size]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
+        print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-            data = Variable(torch.from_numpy(padded.transpose(0, 1))).cuda()
-            print (data)
+            data = Variable(torch.from_numpy(padded)).cuda()
+
             targets = Variable(torch.from_numpy(targets.transpose(0, 1).flatten())).cuda()
         else:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
