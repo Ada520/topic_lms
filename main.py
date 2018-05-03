@@ -312,9 +312,9 @@ def train():
         #print (output.view(-1, ntokens))
         #output = output.transpose(0, 1)
         output = output.cpu().data.numpy()
-        print (output[0][:seqlen[0]].shape)
+        output = np.transpose(output, (1, 0, 2))
         output = [output[:seqlen[i], :] for i in range(len(sub))]
-
+        print (np.concatenate(output).ravel().shape)
         output = output.transpose(0, 1)
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
