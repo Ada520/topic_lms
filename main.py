@@ -312,8 +312,9 @@ def train():
         #print (output.view(-1, ntokens))
         #output = output.transpose(0, 1)
         output = output.cpu().data.numpy()
-        print (output.shape())
+        print (output.shape)
         output = np.transpose(output, (1, 0, 2))
+        print (output.shape)
         output = [output[:seqlen[i], :] for i in range(len(sub))]
         print (np.concatenate(output).shape)
         #output = output.transpose(0, 1)
