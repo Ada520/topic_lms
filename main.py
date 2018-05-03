@@ -207,7 +207,7 @@ def evaluate(data_source, batch_size=10):
     #n_batches = (batch_len -1) // seq_len
     b_n = 0
     for batch_n in range(0, len(data_source)-args.batch_size, args.batch_size):
-        b_n += 1.0
+        b_n += 1
         sub = train_data[batch_n: batch_n + args.batch_size]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         targets = np.roll(padded, -1)
@@ -263,7 +263,7 @@ def train():
     b_n = 0
     for batch_n in range(0, data_len-args.batch_size, args.batch_size):
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
-        b_n += 1.0
+        b_n += 1
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n + args.batch_size]
