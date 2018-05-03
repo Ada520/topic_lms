@@ -205,8 +205,9 @@ def evaluate(data_source, batch_size=10):
     hidden = model.init_hidden(args.batch_size)
     #_, batch_len = data_source.shape
     #n_batches = (batch_len -1) // seq_len
-
+    b_n = 0
     for batch_n in range(0, len(data_source)-args.batch_size, args.batch_size):
+        b_n += 1.0
         sub = train_data[batch_n: batch_n + args.batch_size]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         targets = np.roll(padded, -1)
@@ -259,9 +260,10 @@ def train():
     #m, batch_len = train_data.shape
     #n_batches = (batch_len -1) // seq_len
     data_len = len(train_data)
+    b_n = 0
     for batch_n in range(0, data_len-args.batch_size, args.batch_size):
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
-
+        b_n += 1.0
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n + args.batch_size]
@@ -270,20 +272,20 @@ def train():
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
-        target_sub = [targets[i][:(seqlen[i])] for i in range(len(sub))]
+        #target_sub = [targets[i][:(seqlen[i])] for i in range(len(sub))]
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
             data = Variable(torch.from_numpy(padded.T)).cuda()
             targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
-            target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
+            #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
         else:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
             data = Variable(torch.from_numpy(padded.T))
             targets = Variable(torch.from_numpy(targets.T.flatten()))
-            target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel()))
+            #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel()))
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         #print ('next batch')
@@ -330,12 +332,12 @@ def train():
         print (total_loss)
         total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
-        if batch_n % args.log_interval == 0 and batch_n > 0:
+        if b_n % args.log_interval == 0 and b_n > 0:
             cur_loss = total_loss[0] / args.log_interval
             elapsed = time.time() - start_time
             print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
-                epoch, batch_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
+                epoch, b_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
