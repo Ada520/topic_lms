@@ -204,7 +204,7 @@ def evaluate(data_source, batch_size=10):
     if args.model == 'QRNN':
         model.reset()
     total_loss = 0
-    #hidden = model.init_hidden(args.batch_size)
+    hidden = model.init_hidden(args.batch_size)
     #_, batch_len = data_source.shape
     #n_batches = (batch_len -1) // seq_len
 
