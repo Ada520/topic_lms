@@ -313,6 +313,7 @@ def train():
         #output = output.transpose(0, 1)
         print (output.size())
         output = output.transpose(0, 1)
+        print (output.size())
         output = [output[:seqlen[i], :] for i in range(len(sub))]
         print (output[0].size())
         output = torch.cat(output, dim=1)
