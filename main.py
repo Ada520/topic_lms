@@ -143,7 +143,7 @@ total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[
 print(f'Args: {args}')
 print(f'Model total parameters: {total_params}')
 
-criterion = nn.CrossEntropyLoss(ignore_index=-1)
+criterion = nn.CrossEntropyLoss(ignore_index=0)
 
 ###############################################################################
 # get lda vectors
@@ -311,11 +311,11 @@ def train():
         #print(output.size(), targets.size())
         #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
         #print (output.view(-1, ntokens))
-        output = output.transpose(0, 1)
-        output = [o[:seqlen[i], :] for i, o in enumerate(output)]
-        output = torch.cat(output, dim=0)
-        #raw_loss = criterion(output.view(-1, ntokens), targets)
-        raw_loss = criterion(output, target_sub)
+        #output = output.transpose(0, 1)
+        #output = [o[:seqlen[i], :] for i, o in enumerate(output)]
+        #output = torch.cat(output, dim=0)
+        raw_loss = criterion(output.view(-1, ntokens), targets)
+        #raw_loss = criterion(output, target_sub)
         loss = raw_loss
         # Activiation Regularization
         loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
