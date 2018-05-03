@@ -121,7 +121,7 @@ ntokens = len(vocab) + 1
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
-weight = torch.ones(ntokens)
+weight = torch.ones(ntokens).cuda()
 weight[0] = 0.0
 
 #print (valid_data.shape, train_data.shape, test_data.shape)
