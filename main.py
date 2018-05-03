@@ -283,6 +283,7 @@ def train():
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
             data = Variable(torch.from_numpy(padded.T))
             targets = Variable(torch.from_numpy(targets.T.flatten()))
+            target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel()))
         #targets = targets.view(targets.numel())
         #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
         #print ('next batch')
@@ -326,7 +327,7 @@ def train():
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
         optimizer.step()
-
+        print (total_loss)
         total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
         if batch_n % args.log_interval == 0 and batch_n > 0:
