@@ -121,7 +121,8 @@ ntokens = len(vocab) + 1
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
-
+weight = torch.ones(ntokens)
+weight[0] = 0.0
 
 #print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -144,7 +145,7 @@ total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[
 print(f'Args: {args}')
 print(f'Model total parameters: {total_params}')
 
-criterion = nn.CrossEntropyLoss(ignore_index=0)
+criterion = nn.CrossEntropyLoss(weight=weight)
 
 ###############################################################################
 # get lda vectors
