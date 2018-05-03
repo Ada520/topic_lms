@@ -314,8 +314,9 @@ def train():
         output = output.cpu().data.numpy()
         output = np.transpose(output, (1, 0, 2))
         output = [output[:seqlen[i], :] for i in range(len(sub))]
-        print (np.concatenate(output).ravel().shape)
-        output = output.transpose(0, 1)
+        print (np.concatenate(output).shape)
+        #output = output.transpose(0, 1)
+        output = torch.from_numpy(output).view(-1, ntokens).cuda()
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
         loss = raw_loss
