@@ -207,7 +207,7 @@ def evaluate(data_source, batch_size=10):
     _, batch_len = data_source.shape
     n_batches = (batch_len -1) // seq_len
 
-    for batch_n in range(0, len(data_source), args.batch_size):
+    for batch_n in range(0, len(data_source)-args.batch_size, args.batch_size):
         sub = train_data[batch_n: batch_n + args.batch_size]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         targets = np.roll(padded, -1)
@@ -260,7 +260,7 @@ def train():
     #m, batch_len = train_data.shape
     #n_batches = (batch_len -1) // seq_len
     data_len = len(train_data)
-    for batch_n in range(0, data_len, args.batch_size):
+    for batch_n in range(0, data_len-args.batch_size, args.batch_size):
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
 
         lr2 = optimizer.param_groups[0]['lr']
@@ -327,7 +327,7 @@ def train():
             elapsed = time.time() - start_time
             print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
-                epoch, batch_n, len(train_data) // args.bptt, optimizer.param_groups[0]['lr'],
+                epoch, batch_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
