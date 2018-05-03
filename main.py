@@ -270,7 +270,7 @@ def train():
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
-        targets = np.array([sub[i][:(seqlen[i])] for i in range(len(sub))])
+        targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
