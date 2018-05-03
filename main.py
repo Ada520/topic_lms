@@ -270,7 +270,7 @@ def train():
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
-        targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
+
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
@@ -307,6 +307,7 @@ def train():
         else:
             output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
         #print(output.size(), targets.size())
+        #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
         print (output.size())
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
