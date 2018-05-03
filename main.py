@@ -309,9 +309,12 @@ def train():
             output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
         #print(output.size(), targets.size())
         #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
-        print (output.view(-1, ntokens))
-        output = output.transpose(0, 1)
-        output = torch.stack([output[:seqlen[i], :] for i in range(len(sub))])
+        #print (output.view(-1, ntokens))
+        #output = output.transpose(0, 1)
+        output = output.cpu().data.numpy()
+        print (output[0])
+        output = [output[:seqlen[i], :] for i in range(len(sub))]
+
         output = output.transpose(0, 1)
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
