@@ -270,14 +270,14 @@ def train():
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
-        target_lens = [targets[i][:(seqlen[i])] for i in range(len(sub))]
+        target_sub = [targets[i][:(seqlen[i])] for i in range(len(sub))]
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
             data = Variable(torch.from_numpy(padded.T)).cuda()
             targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
-            target_lens = Variable(torch.from_numpy(np.concatenate(target_lens).ravel())).cuda()
+            target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
         else:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
@@ -314,7 +314,7 @@ def train():
         output = [o[:seqlen[i], :] for i, o in enumerate(output)]
         output = torch.cat(output, dim=0)
         #raw_loss = criterion(output.view(-1, ntokens), targets)
-        raw_loss = criterion(output, targets)
+        raw_loss = criterion(output, target_sub)
         loss = raw_loss
         # Activiation Regularization
         loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
