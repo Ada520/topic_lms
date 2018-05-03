@@ -314,8 +314,9 @@ def train():
         print (output.size())
         output = output.transpose(0, 1)
         print (output.size())
-        output = [output[:seqlen[i], :] for i in range(len(sub))]
-        print (output[0].size())
+        output = [o[:seqlen[i], :] for o, i in enumerate(output)]
+        print (seqlen[1])
+        print (output[1].size())
         output = torch.cat(output, dim=1)
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
