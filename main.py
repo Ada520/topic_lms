@@ -309,6 +309,7 @@ def train():
         #print(output.size(), targets.size())
         #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
         print (output.size())
+        print (targets)
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
         loss = raw_loss
