@@ -307,6 +307,7 @@ def train():
         else:
             output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
         #print(output.size(), targets.size())
+        print (output.size())
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
         loss = raw_loss
