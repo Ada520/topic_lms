@@ -311,14 +311,10 @@ def train():
         #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
         #print (output.view(-1, ntokens))
         #output = output.transpose(0, 1)
-        output = output.cpu().data.numpy()
-        print (output.shape)
-        output = np.transpose(output, (1, 0, 2))
-        print (output.shape)
-        output = [output[:seqlen[i], :] for i in range(len(sub))]
-        print (np.concatenate(output).shape)
-        #output = output.transpose(0, 1)
-        output = torch.from_numpy(output).view(-1, ntokens).cuda()
+        output = output.transpose(0, 1)
+        output = [output[:seqlen[i], :].transpose(0, 1) for i in range(len(sub))]
+        print (output.size())
+        output = torch.cat(output, dim=1)
         raw_loss = criterion(output.view(-1, ntokens), targets)
 
         loss = raw_loss
