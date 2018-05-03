@@ -329,7 +329,7 @@ def train():
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
         optimizer.step()
-        print (total_loss)
+        #print (total_loss)
         total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
         if b_n % args.log_interval == 0 and b_n > 0:
