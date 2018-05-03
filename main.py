@@ -310,16 +310,11 @@ def train():
         #print(output.size(), targets.size())
         #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
         #print (output.view(-1, ntokens))
-        #output = output.transpose(0, 1)
-        print (output.size())
         output = output.transpose(0, 1)
-        print (output.size())
         output = [o[:seqlen[i], :] for i, o in enumerate(output)]
-        print (seqlen[1])
-        print (output[1].size())
-        output = torch.cat(output, dim=1)
-        raw_loss = criterion(output.view(-1, ntokens), targets)
-
+        output = torch.cat(output, dim=0)
+        #raw_loss = criterion(output.view(-1, ntokens), targets)
+        raw_loss = criterion(output, targets)
         loss = raw_loss
         # Activiation Regularization
         loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
