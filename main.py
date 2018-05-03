@@ -248,7 +248,7 @@ def evaluate(data_source, batch_size=10):
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data
         #hidden = repackage_hidden(hidden)
-    return total_loss[0] / (data_source.shape[1])
+    return total_loss[0] / len(data_source)
 
 
 def train():
