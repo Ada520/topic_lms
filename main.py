@@ -121,8 +121,6 @@ ntokens = len(vocab) + 1
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
-weight = torch.ones(ntokens).cuda()
-weight[0] = 0.0
 
 #print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -145,7 +143,7 @@ total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[
 print(f'Args: {args}')
 print(f'Model total parameters: {total_params}')
 
-criterion = nn.CrossEntropyLoss(weight=weight)
+criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
 ###############################################################################
 # get lda vectors
@@ -267,10 +265,12 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n + args.batch_size]
+        seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
+        targets = np.array([sub[i][:(seqlen[i])] for i in range(len(sub))])
         model.train()
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
