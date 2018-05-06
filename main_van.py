@@ -85,6 +85,8 @@ parser.add_argument('-s', '--en2-units',
                     type=int,   default=100)
 parser.add_argument('-t', '--num-topic',
                     type=int,   default=50)
+parser.add_argument('-inp', '--num-input',
+                    type=int,   default=50)
 args = parser.parse_args()
 
 # Set the random seed manually for reproducibility.
@@ -157,7 +159,8 @@ if args.mit_topic:
 else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 
-net_arch = args.en1_units, args.en2_units, args.num_topic, len(sorted_wc)
+net_arch = args.en1_units, args.en2_units, args.num_topic, args.num_input
+net_arch.num_input = len(sorted_wc)
 prod_lda = ProdLDA(net_arch)
 lda_optim = torch.optim.Adam(prod_lda.parameters(), 0.002, betas=(args.momentum, 0.999))
 if args.cuda:
