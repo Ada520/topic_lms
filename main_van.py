@@ -326,7 +326,7 @@ def train():
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
             data = Variable(torch.from_numpy(padded.T)).cuda() # seq_len X batch_size
             targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
-            van_inp = Variable(torch.from_numpy(van_inp)).cuda()
+            van_inp = Variable(torch.from_numpy(van_inp).type(torch.FloatTensor)).cuda()
             #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
         else:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
