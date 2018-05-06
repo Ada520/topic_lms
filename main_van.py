@@ -159,7 +159,7 @@ if args.mit_topic:
 else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 
-net_arch = args.en1_units, args.en2_units, args.num_topic, args.num_input
+net_arch = args
 net_arch.num_input = len(sorted_wc)
 prod_lda = ProdLDA(net_arch)
 lda_optim = torch.optim.Adam(prod_lda.parameters(), 0.002, betas=(args.momentum, 0.999))
