@@ -118,6 +118,9 @@ def create_vocab(dataset, min_freq):
     for word in dataset:
         vocab[word] += 1.0
 
+    with open('word_count.pkl', 'w') as f:
+        pickle.dump(vocab, f)
+
     for k, v in vocab.items():
         if v > min_freq:
             out_vocab.append(k)
