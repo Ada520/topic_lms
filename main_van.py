@@ -310,6 +310,7 @@ def train():
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         van_inp = [to_onehot(doc.astype('int'), len(sorted_wc)) for doc in padded]
+        print (van_inp)
         van_inp = np.vstack(van_inp)
         print (van_inp)
         #print (padded.shape)
