@@ -89,6 +89,8 @@ parser.add_argument('-inp', '--num-input',
                     type=int,   default=1000)
 parser.add_argument('-v', '--variance',
                     type=float, default=0.995)
+parser.add_argument('-q', '--init-mult',
+                    type=float, default=1.0)
 args = parser.parse_args()
 
 # Set the random seed manually for reproducibility.
