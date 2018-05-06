@@ -118,9 +118,6 @@ def create_vocab(dataset, min_freq):
     for word in dataset:
         vocab[word] += 1.0
 
-    with open('word_count.pkl', 'w') as f:
-        pickle.dump(vocab, f)
-
     for k, v in vocab.items():
         if v > min_freq:
             out_vocab.append(k)
@@ -138,7 +135,7 @@ def create_vocab(dataset, min_freq):
 
     logger.info('Created vocabulary!')
 
-    return dict(zip(out_vocab, range(1, len(out_vocab) + 1)))
+    return vocab, dict(zip(out_vocab, range(1, len(out_vocab) + 1)))
 
 
 def preprocess_data(corpus):
@@ -157,16 +154,20 @@ def preprocess_data(corpus):
     out_valid = os.path.expanduser('~/topic_lms/data/' + corpus + '/val_transform.pkl')
 
     out_vocab = os.path.expanduser('~/topic_lms/data/' + corpus + '/vocab.pkl')
+    word_count = os.path.expanduser('~/topic_lms/data/' + corpus + '/word_counts.pkl')
 
     # process train and get vocab
     train = read_dataset(train_path)
     train_flat, train = get_flattened_proc(train)
-    vocab = create_vocab(train_flat, 10)
+    w_count, vocab = create_vocab(train_flat, 10)
     vocab[unk_symbol] = len(vocab) + 1
 
     # write vocab into file.
     with open(out_vocab, 'wb') as f:
         pickle.dump(vocab, f)
+
+    with open(word_count, 'wb') as f:
+        pickle.dump(w_count, f)
 
     logger.info("Length of vocabulary:" + str(len(vocab)))
     train = get_sent2id(train, vocab)
