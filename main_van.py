@@ -309,8 +309,8 @@ def train():
         sub = train_data[batch_n: batch_n + args.batch_size]
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
-        van_inp = np.array([to_onehot(doc.astype('int'), len(sorted_wc)) for doc in padded if np.sum(doc) != 0])
-        van_inp = np.stack(van_inp, axis=0)
+        van_inp = [to_onehot(doc.astype('int'), len(sorted_wc)) for doc in padded if np.sum(doc) != 0]
+        van_inp = np.vstack(van_inp)
         print (van_inp)
         #print (padded.shape)
         targets = np.roll(padded, -1)
@@ -320,7 +320,7 @@ def train():
         if args.cuda:
             # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
             # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-            data = Variable(torch.from_numpy(padded.T)).cuda()
+            data = Variable(torch.from_numpy(padded.T)).cuda() # seq_len X batch_size
             targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
             van_inp = Variable(torch.from_numpy(van_inp)).cuda()
             #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
