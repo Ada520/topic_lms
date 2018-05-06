@@ -87,6 +87,8 @@ parser.add_argument('-t', '--num-topic',
                     type=int,   default=50)
 parser.add_argument('-inp', '--num-input',
                     type=int,   default=1000)
+parser.add_argument('-v', '--variance',
+                    type=float, default=0.995)
 args = parser.parse_args()
 
 # Set the random seed manually for reproducibility.
@@ -165,6 +167,7 @@ prod_lda = ProdLDA(net_arch)
 lda_optim = torch.optim.Adam(prod_lda.parameters(), 0.002, betas=(args.momentum, 0.999))
 if args.cuda:
     model.cuda()
+    prod_lda.cuda()
 total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[0] for x in model.parameters())
 print(f'Args: {args}')
 print(f'Model total parameters: {total_params}')
