@@ -222,8 +222,12 @@ def get_theta(texts, lda, dictionari, idx2word):
     review_alphas = np.array([get_lda_vec(lda[dictionari.doc2bow(sentence)]) for sentence in texts])
     return torch.from_numpy(review_alphas)
 
-def to_onehot(data, min_length):
-    return np.bincount(data, minlength=min_length)
+def to_onehot(batch, out_size):
+    out = np.zeros((len(batch), out_size))
+    print (out.shape)
+    for i, seq in enumerate(batch):
+        out[i] = np.bincount(seq, minlength=out_size)
+    return out
 
 
 ###############################################################################
@@ -307,12 +311,9 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n + args.batch_size]
+        van_inp = to_onehot(sub, len(sorted_wc))
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
-        print (padded.shape)
-        van_inp = [to_onehot(doc.astype('int'), len(sorted_wc)) for doc in padded]
-        print (van_inp)
-        van_inp = np.vstack(van_inp)
         print (van_inp)
         #print (padded.shape)
         targets = np.roll(padded, -1)
