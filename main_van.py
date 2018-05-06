@@ -247,6 +247,7 @@ def evaluate(data_source, batch_size=10):
         sub = train_data[batch_n: batch_n + args.batch_size]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         van_inp = np.array([to_onehot(doc.astype('int'),len(sorted_wc)) for doc in padded if np.sum(doc)!=0])
+        print (van_inp[0])
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
         if args.cuda:
