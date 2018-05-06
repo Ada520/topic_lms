@@ -357,7 +357,7 @@ def train():
         optimizer.zero_grad()
         lda_optim.zero_grad()
         recon, loss_lda = prod_lda(van_inp, compute_loss=True)
-        topic_var = prod_lda.decoder.weight.data.type(torch.FloatTensor)
+        topic_var = Variable(prod_lda.decoder.weight.data.type(torch.FloatTensor))
         if args.mit_topic:
             output, rnn_hs, dropped_rnn_hs = model(data, topic_var, hidden, return_h=True)
         else:
