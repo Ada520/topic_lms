@@ -226,8 +226,7 @@ def to_onehot(batch, out_size):
     out = np.zeros((len(batch), out_size))
     print (out.shape)
     for i, seq in enumerate(batch):
-        temp = np.bincount(seq, minlength=out_size)
-        print (temp.shape)
+        seq = [w for w in seq if w in sorted_wc]
         out[i] = np.bincount(seq, minlength=out_size)
     return out
 
