@@ -86,7 +86,7 @@ parser.add_argument('-s', '--en2-units',
 parser.add_argument('-t', '--num-topic',
                     type=int,   default=50)
 parser.add_argument('-inp', '--num-input',
-                    type=int,   default=50)
+                    type=int,   default=1000)
 args = parser.parse_args()
 
 # Set the random seed manually for reproducibility.
