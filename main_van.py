@@ -309,7 +309,7 @@ def train():
         sub = train_data[batch_n: batch_n + args.batch_size]
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
-        van_inp = np.array([to_onehot(doc.astype('int'), len(sorted_wc)) for doc in padded if np.sum(doc) != 0])
+        van_inp = np.array([to_onehot(doc.astype('float'), len(sorted_wc)) for doc in padded if np.sum(doc) != 0])
         print (van_inp[0])
         #print (padded.shape)
         targets = np.roll(padded, -1)
