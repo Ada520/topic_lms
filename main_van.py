@@ -355,9 +355,7 @@ def train():
         hidden = repackage_hidden(hidden)
         #print hidden
         optimizer.zero_grad()
-        lda_optim.zero_grad()
         recon, loss_lda = prod_lda(van_inp, compute_loss=True)
-        print (loss_lda)
         if args.cuda:
             topic_var = Variable(prod_lda.p.data.type(torch.cuda.FloatTensor), requires_grad = False)
         else:
@@ -382,6 +380,8 @@ def train():
         # Temporal Activation Regulari  zation (slowness)
         loss = loss + sum(args.beta * (rnn_h[1:] - rnn_h[:-1]).pow(2).mean() for rnn_h in rnn_hs[-1:])
         #print (data.size())
+        print (loss_lda, loss)
+        lda_optim.zero_grad()
         loss.backward()
         loss_lda.backward()
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
