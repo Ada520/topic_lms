@@ -383,6 +383,7 @@ def train():
         print (loss_lda, loss)
         lda_optim.zero_grad()
         loss.backward()
+        print (loss.backward(), loss_lda.backward())
         loss_lda.backward()
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
