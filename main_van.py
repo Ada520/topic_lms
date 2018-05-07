@@ -357,6 +357,7 @@ def train():
         optimizer.zero_grad()
         lda_optim.zero_grad()
         recon, loss_lda = prod_lda(van_inp, compute_loss=True)
+        print (loss_lda)
         if args.cuda:
             topic_var = Variable(prod_lda.p.data.type(torch.cuda.FloatTensor), requires_grad = False)
         else:
