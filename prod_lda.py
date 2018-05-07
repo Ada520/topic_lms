@@ -53,8 +53,8 @@ class ProdLDA(nn.Module):
         # take sample
         eps = Variable(input.data.new().resize_as_(posterior_mean.data).normal_()) # noise
         z = posterior_mean + posterior_var.sqrt() * eps                 # reparameterization
-        p = F.softmax(z)                                                # mixture probability
-        p = self.p_drop(p)
+        self.p = F.softmax(z)                                                # mixture probability
+        p = self.p_drop(self.p)
         # do reconstruction
         recon = F.softmax(self.decoder_bn(self.decoder(p)))             # reconstructed distribution over vocabulary
 
