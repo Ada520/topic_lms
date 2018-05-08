@@ -25,7 +25,7 @@ run using python main.py --batch_size 20 --data data/penn --dropouti 0.4 --dropo
 
 from utils import batchify, get_batch, repackage_hidden
 
-parser = argparse.ArgumentParser(description='PyTorch PennTreeBank RNN/LSTM Language Model')
+parser = argparse.ArgumentParser(description='PyTorch domain adapted LSTM')
 parser.add_argument('--data', type=str, default='data/penn/',
                     help='location of the data corpus')
 parser.add_argument('--model', type=str, default='LSTM',
@@ -225,8 +225,11 @@ def get_theta(texts, lda, dictionari, idx2word):
 def to_onehot(batch, out_size):
     out = np.zeros((len(batch), out_size))
     for i, seq in enumerate(batch):
-        seq = [w for w in seq if w in sorted_wc]
-        out[i] = np.bincount(seq, minlength=out_size)
+        try:
+            seq = [w for w in seq if w in sorted_wc]
+            out[i] = np.bincount(seq, minlength=out_size)
+        except Exception:
+            print (seq)
     return out
 
 
