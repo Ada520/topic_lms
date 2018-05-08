@@ -229,7 +229,9 @@ def to_onehot(batch, out_size):
             seq = [w for w in seq if w in sorted_wc]
             out[i] = np.bincount(seq, minlength=out_size)
         except Exception:
+            print ("Exception in one hot for:")
             print (seq)
+            continue
     return out
 
 
