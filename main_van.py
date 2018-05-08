@@ -291,6 +291,7 @@ def evaluate(data_source, batch_size=10):
         topic_var = Variable(p.data.type(torch.cuda.FloatTensor))
         hidden = repackage_hidden(hidden)
         optimizer.zero_grad()
+        lda_optim.zero_grad()
         if args.mit_topic:
             output = model(data, topic_var, hidden)
         else:
