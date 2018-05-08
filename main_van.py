@@ -396,7 +396,7 @@ def train():
             print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f} | lda loss {:8.2f}'.format(
                 epoch, b_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
-                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss), loss_lda))
+                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss), loss_lda[0]))
             total_loss = 0
             start_time = time.time()
         ###
