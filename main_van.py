@@ -250,9 +250,8 @@ def evaluate(data_source, batch_size=10):
     for batch_n in range(0, len(data_source)-args.batch_size, args.batch_size):
         b_n += 1
         sub = train_data[batch_n: batch_n + args.batch_size]
+        van_inp = to_onehot(sub, len(sorted_wc))
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
-        van_inp = np.array([to_onehot(doc.astype('int'),len(sorted_wc)) for doc in padded if np.sum(doc)!=0])
-        print (van_inp[0])
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
         if args.cuda:
@@ -270,20 +269,22 @@ def evaluate(data_source, batch_size=10):
         #print len(data), len(targets)
         #print data.size()
 
-        #print "evaluating!"
-        #comment out this line to get the original lda vector
-        if args.cuda:
-            inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
-            inp_topic = inp_topic.type(torch.cuda.FloatTensor)
-        else:
-            inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word)
-            inp_topic = inp_topic.type(torch.FloatTensor)
-        #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
-
-        topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
+        # #print "evaluating!"
+        # #comment out this line to get the original lda vector
+        # if args.cuda:
+        #     inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        #     inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        # else:
+        #     inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word)
+        #     inp_topic = inp_topic.type(torch.FloatTensor)
+        # #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        #
+        # topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
 
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
+        recon, p = prod_lda(van_inp)
+        topic_var = Variable(p.data.type(torch.cuda.FloatTensor))
         hidden = repackage_hidden(hidden)
         optimizer.zero_grad()
         if args.mit_topic:
@@ -315,7 +316,6 @@ def train():
         van_inp = to_onehot(sub, len(sorted_wc))
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
-        print (van_inp)
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
@@ -355,12 +355,11 @@ def train():
         hidden = repackage_hidden(hidden)
         #print hidden
         optimizer.zero_grad()
-        recon, loss_lda = prod_lda(van_inp, compute_loss=True)
+        recon, loss_lda, p = prod_lda(van_inp, compute_loss=True)
         if args.cuda:
-            topic_var = Variable(prod_lda.p.data.type(torch.cuda.FloatTensor), requires_grad = False)
+            topic_var = Variable(p.data.type(torch.cuda.FloatTensor), requires_grad = False)
         else:
-            topic_var = Variable(prod_lda.p.data.type(torch.FloatTensor), requires_grad=False)
-        print (topic_var.size())
+            topic_var = Variable(p.data.type(torch.FloatTensor), requires_grad=False)
         if args.mit_topic:
             output, rnn_hs, dropped_rnn_hs = model(data, topic_var, hidden, return_h=True)
         else:

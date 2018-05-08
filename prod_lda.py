@@ -59,9 +59,9 @@ class ProdLDA(nn.Module):
         recon = F.softmax(self.decoder_bn(self.decoder(p)), dim=-1)             # reconstructed distribution over vocabulary
 
         if compute_loss:
-            return recon, self.loss(input, recon, posterior_mean, posterior_logvar, posterior_var, avg_loss)
+            return recon, self.loss(input, recon, posterior_mean, posterior_logvar, posterior_var, avg_loss), self.p
         else:
-            return recon
+            return recon, self.p
 
     def loss(self, input, recon, posterior_mean, posterior_logvar, posterior_var, avg=True):
         # NL
