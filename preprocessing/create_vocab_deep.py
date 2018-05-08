@@ -171,6 +171,7 @@ def preprocess_data(corpus):
 
     logger.info("Length of vocabulary:" + str(len(vocab)))
     train = get_sent2id(train_flat, vocab)
+    print (train)
     write_batches(train, 64, 30, out_train)
 
     valid = read_dataset(valid_path)
