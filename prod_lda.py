@@ -37,10 +37,10 @@ class ProdLDA(nn.Module):
             #std = 1. / math.sqrt( ac.init_mult * (ac.num_topic + ac.num_input))
             self.decoder.weight.data.uniform_(0, ac.init_mult)
         # remove BN's scale parameters
-        self.logvar_bn .register_parameter('weight', None)
-        self.mean_bn   .register_parameter('weight', None)
-        self.decoder_bn.register_parameter('weight', None)
-        self.decoder_bn.register_parameter('weight', None)
+        # self.logvar_bn .register_parameter('weight', None)
+        # self.mean_bn   .register_parameter('weight', None)
+        # self.decoder_bn.register_parameter('weight', None)
+        # self.decoder_bn.register_parameter('weight', None)
 
     def forward(self, input, compute_loss=False, avg_loss=True):
         # compute posterior

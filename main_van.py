@@ -380,10 +380,10 @@ def train():
         # Temporal Activation Regulari  zation (slowness)
         loss = loss + sum(args.beta * (rnn_h[1:] - rnn_h[:-1]).pow(2).mean() for rnn_h in rnn_hs[-1:])
         #print (data.size())
-        print (loss_lda, loss)
+        #print (loss_lda, loss)
         lda_optim.zero_grad()
         loss.backward()
-        print (loss_lda.backward())
+        #print (loss_lda.backward())
         loss_lda.backward()
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
