@@ -44,12 +44,11 @@ def get_wid(word, vocab_d):
         return vocab_d[unk_symbol]
 
 
-def get_sent2id(doc, vocab_dict):
+def get_sent2id(sent, vocab_dict):
 
-    # return [get_wid(w, vocab_dict)
-    #         for w in doc]
+    return [get_wid(w, vocab_dict) for w in sent]
 
-    return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
+    #return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
 
 
 def read_dataset(filename):
@@ -84,7 +83,7 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
     #         for sublist in temp
     #         for subsublist in sublist
     #         if len(subsublist) > 0]
-    print (raw_data.shape)
+    print (len(raw_data))
     temp_flat = [sent[:threshold] for sent in raw_data]
     # Save list to disk
     with open(save_path, 'wb') as f:
@@ -171,17 +170,17 @@ def preprocess_data(corpus):
         pickle.dump(w_count, f)
 
     logger.info("Length of vocabulary:" + str(len(vocab)))
-    train = get_sent2id(train, vocab)
+    train = get_sent2id(train_flat, vocab)
     write_batches(train, 64, 30, out_train)
 
     valid = read_dataset(valid_path)
     valid_flat, valid = get_flattened_proc(valid)
-    valid = get_sent2id(valid, vocab)
+    valid = get_sent2id(valid_flat, vocab)
     write_batches(valid, 64, 30, out_valid)
 
     test = read_dataset(test_path)
     test_flat, test  = get_flattened_proc(test)
-    test = get_sent2id(test, vocab)
+    test = get_sent2id(test_flat, vocab)
     write_batches(test, 64, 30, out_test)
 
 
