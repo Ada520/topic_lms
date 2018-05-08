@@ -224,7 +224,6 @@ def get_theta(texts, lda, dictionari, idx2word):
 
 def to_onehot(batch, out_size):
     out = np.zeros((len(batch), out_size))
-    print (out.shape)
     for i, seq in enumerate(batch):
         seq = [w for w in seq if w in sorted_wc]
         out[i] = np.bincount(seq, minlength=out_size)
