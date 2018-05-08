@@ -44,11 +44,11 @@ def get_wid(word, vocab_d):
         return vocab_d[unk_symbol]
 
 
-def get_sent2id(sent, vocab_dict):
+def get_sent2id(doc, vocab_dict):
 
-    return [get_wid(w, vocab_dict) for w in sent]
+    #return [get_wid(w, vocab_dict) for w in sent]
 
-    #return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
+    return [[get_wid(w, vocab_dict) for w in sent] for sent in doc]
 
 
 def read_dataset(filename):
