@@ -323,9 +323,12 @@ def train():
         print (van_inp.shape)
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
+        print (padded.shape)
         #print (padded.shape)
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
+        data = Variable(torch.from_numpy(padded.T)).cuda()
+        print (data.size())
         #target_sub = [targets[i][:(seqlen[i])] for i in range(len(sub))]
         # model.train()
         # prod_lda.train()
