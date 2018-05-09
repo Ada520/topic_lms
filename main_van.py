@@ -144,7 +144,7 @@ sorted_wc = sorted(word_counts.items(), key=operator.itemgetter(1))
 most_freq_words = 0.1 * len(word_counts) // 100
 sorted_wc = sorted_wc[0: len(sorted_wc) - int(most_freq_words)]
 sorted_wc = [w for (w, c) in sorted_wc if c > 10.0]
-sorted_wc = [w2id[w] for w in sorted_wc if w not in stop_words]
+sorted_wc = set([w2id[w] for w in sorted_wc if w not in stop_words])
 #lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 #lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
@@ -166,7 +166,7 @@ else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
 
 net_arch = args
-net_arch.num_input = len(sorted_wc)
+net_arch.num_input = ntokens
 prod_lda = ProdLDA(net_arch)
 lda_optim = torch.optim.Adam(prod_lda.parameters(), 0.002, betas=(args.momentum, 0.999))
 if args.cuda:
