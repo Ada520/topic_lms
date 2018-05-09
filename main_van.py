@@ -145,9 +145,9 @@ most_freq_words = 0.1 * len(word_counts) // 100
 sorted_wc = sorted_wc[0: len(sorted_wc) - int(most_freq_words)]
 sorted_wc = [w for (w, c) in sorted_wc if c > 10.0]
 sorted_wc = [w2id[w] for w in sorted_wc if w not in stop_words]
-lda_model = models.LdaModel.load(lda_path)
+#lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
-lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
+#lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 
 #print (valid_data.shape, train_data.shape, test_data.shape)
 #train_data = batchify(corpus.train, args.batch_size, args)
@@ -264,13 +264,13 @@ def evaluate(data_source, batch_size=10):
             #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
             data = Variable(torch.from_numpy(padded.T)).cuda()
             targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
-            van_inp = Variable(torch.from_numpy(van_inp)).cuda()
+            van_inp = Variable(torch.from_numpy(van_inp).type(torch.FloatTensor)).cuda()
         else:
             #data = Variable(torch.from_numpy(data_source[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
             #targets = Variable(torch.from_numpy(data_source[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
             data = Variable(torch.from_numpy(padded))
             targets = Variable(torch.from_numpy(targets.flatten()))
-            van_inp = Variable(torch.from_numpy(van_inp))
+            van_inp = Variable(torch.from_numpy(van_inp).type(torch.FloatTensor))
         #print len(data), len(targets)
         #print data.size()
 
@@ -326,89 +326,89 @@ def train():
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
         #target_sub = [targets[i][:(seqlen[i])] for i in range(len(sub))]
-        model.train()
-        prod_lda.train()
-        if args.cuda:
-            # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
-            # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
-            data = Variable(torch.from_numpy(padded.T)).cuda() # seq_len X batch_size
-            targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
-            van_inp = Variable(torch.from_numpy(van_inp).type(torch.FloatTensor)).cuda()
-            #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
-        else:
-            # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
-            # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
-            data = Variable(torch.from_numpy(padded.T))
-            targets = Variable(torch.from_numpy(targets.T.flatten()))
-            van_inp = Variable(torch.from_numpy(van_inp))
-            #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel()))
-        #targets = targets.view(targets.numel())
-        #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
-        #print ('next batch')
-        #Comment out this line to get the original lda vector
+        # model.train()
+        # prod_lda.train()
         # if args.cuda:
-        #     inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
-        #     inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        #     # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1).cuda()
+        #     # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten())).cuda()
+        #     data = Variable(torch.from_numpy(padded.T)).cuda() # seq_len X batch_size
+        #     targets = Variable(torch.from_numpy(targets.T.flatten())).cuda()
+        #     van_inp = Variable(torch.from_numpy(van_inp).type(torch.FloatTensor)).cuda()
+        #     #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel())).cuda()
         # else:
-        #     inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word)
-        #     inp_topic = inp_topic.type(torch.FloatTensor)
-        # #coment the vector with zeros
-        # #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        #     # data = Variable(torch.from_numpy(train_data[:, batch_n * seq_len: (batch_n + 1) * seq_len])).transpose(0, 1)
+        #     # targets = Variable(torch.from_numpy(train_data[:, batch_n * seq_len + 1: (batch_n + 1) * seq_len + 1].transpose(1, 0).flatten()))
+        #     data = Variable(torch.from_numpy(padded.T))
+        #     targets = Variable(torch.from_numpy(targets.T.flatten()))
+        #     van_inp = Variable(torch.from_numpy(van_inp))
+        #     #target_sub = Variable(torch.from_numpy(np.concatenate(target_sub).ravel()))
+        # #targets = targets.view(targets.numel())
+        # #data, targets = get_batch(train_data, i, args, seq_len=seq_len)
+        # #print ('next batch')
+        # #Comment out this line to get the original lda vector
+        # # if args.cuda:
+        # #     inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word).cuda()
+        # #     inp_topic = inp_topic.type(torch.cuda.FloatTensor)
+        # # else:
+        # #     inp_topic = get_theta(data.data.cpu().numpy(), lda_model, lda_dictionary, idx2word)
+        # #     inp_topic = inp_topic.type(torch.FloatTensor)
+        # # #coment the vector with zeros
+        # # #inp_topic = torch.from_numpy(np.zeros((args.batch_size, 50))).cuda()
+        # #
+        # # topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
         #
-        # topic_var = torch.autograd.Variable(inp_topic, requires_grad=False)
-
-        # Starting each batch, we detach the hidden state from how it was previously produced.
-        # If we didn't, the model would try backpropagating all the way to start of the dataset.
-        hidden = repackage_hidden(hidden)
-        #print hidden
-        optimizer.zero_grad()
-        recon, loss_lda, p = prod_lda(van_inp, compute_loss=True)
-        if args.cuda:
-            topic_var = Variable(p.data.type(torch.cuda.FloatTensor), requires_grad = False)
-        else:
-            topic_var = Variable(p.data.type(torch.FloatTensor), requires_grad=False)
-        if args.mit_topic:
-            output, rnn_hs, dropped_rnn_hs = model(data, topic_var, hidden, return_h=True)
-        else:
-            output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
-
-        #print(output.size(), targets.size())
-        #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
-        #print (output.view(-1, ntokens))
-        #output = output.transpose(0, 1)
-        #output = [o[:seqlen[i], :] for i, o in enumerate(output)]
-        #output = torch.cat(output, dim=0)
-        raw_loss = criterion(output.view(-1, ntokens), targets)
-        #raw_loss = criterion(output, target_sub)
-        loss = raw_loss
-        # Activiation Regularization
-        loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
-        # Temporal Activation Regulari  zation (slowness)
-        loss = loss + sum(args.beta * (rnn_h[1:] - rnn_h[:-1]).pow(2).mean() for rnn_h in rnn_hs[-1:])
-        #print (data.size())
-        #print (loss_lda, loss)
-        lda_optim.zero_grad()
-        loss.backward()
-        #print (loss_lda.backward())
-        loss_lda.backward()
-        # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
-        torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
-        optimizer.step()
-        lda_optim.step()
-        #print (total_loss)
-        total_loss += raw_loss.data
-        optimizer.param_groups[0]['lr'] = lr2
-        if b_n % args.log_interval == 0 and b_n > 0:
-            cur_loss = total_loss[0] / args.log_interval
-            elapsed = time.time() - start_time
-            print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
-                    'loss {:5.2f} | ppl {:8.2f}'.format(
-                epoch, b_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
-                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
-            print (loss_lda[0])
-            total_loss = 0
-            start_time = time.time()
-        ###
+        # # Starting each batch, we detach the hidden state from how it was previously produced.
+        # # If we didn't, the model would try backpropagating all the way to start of the dataset.
+        # hidden = repackage_hidden(hidden)
+        # #print hidden
+        # optimizer.zero_grad()
+        # recon, loss_lda, p = prod_lda(van_inp, compute_loss=True)
+        # if args.cuda:
+        #     topic_var = Variable(p.data.type(torch.cuda.FloatTensor), requires_grad = False)
+        # else:
+        #     topic_var = Variable(p.data.type(torch.FloatTensor), requires_grad=False)
+        # if args.mit_topic:
+        #     output, rnn_hs, dropped_rnn_hs = model(data, topic_var, hidden, return_h=True)
+        # else:
+        #     output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
+        #
+        # #print(output.size(), targets.size())
+        # #targets = np.array([np.array(sub[i][:(seqlen[i])], dtype=np.float32) for i in range(len(sub))])
+        # #print (output.view(-1, ntokens))
+        # #output = output.transpose(0, 1)
+        # #output = [o[:seqlen[i], :] for i, o in enumerate(output)]
+        # #output = torch.cat(output, dim=0)
+        # raw_loss = criterion(output.view(-1, ntokens), targets)
+        # #raw_loss = criterion(output, target_sub)
+        # loss = raw_loss
+        # # Activiation Regularization
+        # loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
+        # # Temporal Activation Regulari  zation (slowness)
+        # loss = loss + sum(args.beta * (rnn_h[1:] - rnn_h[:-1]).pow(2).mean() for rnn_h in rnn_hs[-1:])
+        # #print (data.size())
+        # #print (loss_lda, loss)
+        # lda_optim.zero_grad()
+        # loss.backward()
+        # #print (loss_lda.backward())
+        # loss_lda.backward()
+        # # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
+        # torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+        # optimizer.step()
+        # lda_optim.step()
+        # #print (total_loss)
+        # total_loss += raw_loss.data
+        # optimizer.param_groups[0]['lr'] = lr2
+        # if b_n % args.log_interval == 0 and b_n > 0:
+        #     cur_loss = total_loss[0] / args.log_interval
+        #     elapsed = time.time() - start_time
+        #     print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
+        #             'loss {:5.2f} | ppl {:8.2f}'.format(
+        #         epoch, b_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
+        #         elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
+        #     print (loss_lda[0])
+        #     total_loss = 0
+        #     start_time = time.time()
+        # ###
         #batch += 1
         #i += seq_len
 
