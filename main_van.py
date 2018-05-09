@@ -320,7 +320,7 @@ def train():
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n + args.batch_size]
         van_inp = to_onehot(sub, len(sorted_wc))
-        print (van_inp)
+        print (van_inp.shape)
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         #print (padded.shape)
