@@ -255,7 +255,7 @@ def evaluate(data_source, batch_size=10):
     for batch_n in range(0, len(data_source)-args.batch_size, args.batch_size):
         b_n += 1
         sub = train_data[batch_n: batch_n + args.batch_size]
-        van_inp = to_onehot(sub, len(ntokens))
+        van_inp = to_onehot(sub, ntokens)
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T
         targets = np.roll(padded, -1)
         targets[:, -1] = 0
@@ -319,7 +319,7 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         sub = train_data[batch_n: batch_n + args.batch_size]
-        van_inp = to_onehot(sub, len(ntokens))
+        van_inp = to_onehot(sub, ntokens)
         seqlen = [len(dat) for dat in sub]
         padded = np.array(list(itertools.zip_longest(*sub, fillvalue=0))).T # batch X seq_len
         #print (padded.shape)
