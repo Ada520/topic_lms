@@ -30,11 +30,11 @@ parser.add_argument('--data', type=str, default='data/penn/',
                     help='location of the data corpus')
 parser.add_argument('--model', type=str, default='LSTM',
                     help='type of recurrent net (LSTM, QRNN, GRU)')
-parser.add_argument('--emsize', type=int, default=400,
+parser.add_argument('--emsize', type=int, default=300,
                     help='size of word embeddings')
-parser.add_argument('--nhid', type=int, default=1150,
+parser.add_argument('--nhid', type=int, default=900,
                     help='number of hidden units per layer')
-parser.add_argument('--nlayers', type=int, default=3,
+parser.add_argument('--nlayers', type=int, default=2,
                     help='number of layers')
 parser.add_argument('--lr', type=float, default=30,
                     help='initial learning rate')
@@ -168,7 +168,7 @@ else:
 net_arch = args
 net_arch.num_input = ntokens
 prod_lda = ProdLDA(net_arch)
-lda_optim = torch.optim.Adam(prod_lda.parameters(), 0.002, betas=(args.momentum, 0.999))
+#lda_optim = torch.optim.Adam(prod_lda.parameters(), 0.002, betas=(args.momentum, 0.999))
 if args.cuda:
     model.cuda()
     prod_lda.cuda()
@@ -292,7 +292,7 @@ def evaluate(data_source, batch_size=10):
         topic_var = Variable(p.data.type(torch.cuda.FloatTensor))
         hidden = repackage_hidden(hidden)
         optimizer.zero_grad()
-        lda_optim.zero_grad()
+        #lda_optim.zero_grad()
         if args.mit_topic:
             output = model(data, topic_var, hidden)
         else:
@@ -385,16 +385,17 @@ def train():
         loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
         # Temporal Activation Regulari  zation (slowness)
         loss = loss + sum(args.beta * (rnn_h[1:] - rnn_h[:-1]).pow(2).mean() for rnn_h in rnn_hs[-1:])
+        loss = loss + loss_lda
         #print (data.size())
         #print (loss_lda, loss)
-        lda_optim.zero_grad()
+        #lda_optim.zero_grad()
         loss.backward()
         #print (loss_lda.backward())
-        loss_lda.backward()
+        #loss_lda.backward()
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
         optimizer.step()
-        lda_optim.step()
+        #lda_optim.step()
         #print (total_loss)
         total_loss += raw_loss.data
         optimizer.param_groups[0]['lr'] = lr2
