@@ -289,7 +289,8 @@ def evaluate(data_source, batch_size=10):
         # Starting each batch, we detach the hidden state from how it was previously produced.
         # If we didn't, the model would try backpropagating all the way to start of the dataset.
         recon, p = prod_lda(van_inp)
-        topic_var = Variable(p.data.type(torch.cuda.FloatTensor))
+        #topic_var = Variable(p.data.type(torch.cuda.FloatTensor))
+        topic_var = p
         hidden = repackage_hidden(hidden)
         optimizer.zero_grad()
         #lda_optim.zero_grad()
@@ -364,9 +365,11 @@ def train():
         optimizer.zero_grad()
         recon, loss_lda, p = prod_lda(van_inp, compute_loss=True)
         if args.cuda:
-            topic_var = Variable(p.data.type(torch.cuda.FloatTensor), requires_grad = False)
+            #topic_var = Variable(p.data.type(torch.cuda.FloatTensor), requires_grad = True)
+            topic_var = p
         else:
-            topic_var = Variable(p.data.type(torch.FloatTensor), requires_grad=False)
+            #topic_var = Variable(p.data.type(torch.FloatTensor), requires_grad=False)
+            topic_var = p
         if args.mit_topic:
             output, rnn_hs, dropped_rnn_hs = model(data, topic_var, hidden, return_h=True)
         else:
@@ -394,6 +397,7 @@ def train():
         #loss_lda.backward()
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm(model.parameters(), args.clip)
+
         optimizer.step()
         #lda_optim.step()
         #print (total_loss)
