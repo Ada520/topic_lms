@@ -73,16 +73,19 @@ def write_batches(raw_data, batch_size, num_steps, save_path, threshold=30):
     :param save_path:
     :return:
     """
+    # temp = [[sublist[:threshold], sublist[threshold:threshold+30], sublist[threshold+30:threshold+60], sublist[threshold+60:threshold+90], sublist[threshold+90:threshold+120], sublist[threshold+120:threshold+150], sublist[threshold+150:threshold+180], sublist[threshold+180:threshold:210], sublist[threshold+210:threshold+240], sublist[threshold+240:], ]
+    #      if len(sublist) > threshold
+    #      else [sublist]
+    #      for sublist in raw_data]
+
     # Split long sentences into two parts
-    # temp = [[sublist[:threshold], sublist[threshold:threshold+30], sublist[threshold+30:threshold+60], sublist[threshold+60:threshold+90], sublist[threshold+90:threshold+120], sublist[threshold+120:threshold+150], sublist[threshold+150:threshold+180], sublist[threshold+180:threshold:210], sublist[threshold+210:threshold+240], sublist[threshold+240:]]
-    #         if len(sublist) > threshold
-    #         else [sublist]
-    #         for sublist in raw_data]
-    #
-    # temp_flat = [subsublist[:threshold]
-    #         for sublist in temp
-    #         for subsublist in sublist
-    #         if len(subsublist) > 0]
+    temp = [[sublist[idx:idx+30] for idx in range(0, len(sublist), 30)] for sublist in raw_data]
+
+    temp_flat = [subsublist[:threshold]
+         for sublist in temp
+         for subsublist in sublist
+         if len(subsublist) > 0]
+
     print (len(raw_data))
     temp_flat = [sent[:threshold] for sent in raw_data]
     # Save list to disk
