@@ -16,7 +16,7 @@ import itertools
 from nltk.corpus import stopwords
 import operator
 #stop_words = set(stopwords.words('english'))
-with open('stopwords.txt', 'r') as f:
+with open('/data/dchaudhu/topic_lms/data/apnews/stopwords.txt', 'r') as f:
     stop_words = f.readlines()
 stop_words = [stop.replace('\n','') for stop in stop_words]
 
