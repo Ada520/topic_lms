@@ -13,6 +13,13 @@ import os
 from gensim import models
 import gensim
 import itertools
+from nltk.corpus import stopwords
+import operator
+#stop_words = set(stopwords.words('english'))
+with open('stopwords.txt', 'r') as f:
+    stop_words = f.readlines()
+stop_words = [stop.replace('\n','') for stop in stop_words]
+
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 """
@@ -26,11 +33,11 @@ parser.add_argument('--data', type=str, default='data/penn/',
                     help='location of the data corpus')
 parser.add_argument('--model', type=str, default='LSTM',
                     help='type of recurrent net (LSTM, QRNN, GRU)')
-parser.add_argument('--emsize', type=int, default=400,
+parser.add_argument('--emsize', type=int, default=300,
                     help='size of word embeddings')
-parser.add_argument('--nhid', type=int, default=1150,
+parser.add_argument('--nhid', type=int, default=900,
                     help='number of hidden units per layer')
-parser.add_argument('--nlayers', type=int, default=3,
+parser.add_argument('--nlayers', type=int, default=2,
                     help='number of layers')
 parser.add_argument('--lr', type=float, default=30,
                     help='initial learning rate')
@@ -96,6 +103,7 @@ train_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/train_tran
 valid_path = os.path.expanduser('~/topic_lms/data/'+ args.domain + '/val_transform.pkl')
 test_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/test_transform.pkl')
 vocab = os.path.expanduser('~/topic_lms/data/' + args.domain + '/vocab.pkl')
+word_c = os.path.expanduser('~/topic_lms/data/' + args.domain + '/word_counts.pkl')
 lda_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/lda_models/lda_model')
 #path to gensim dictionary used to create lda model
 lda_dict_path = os.path.expanduser('~/topic_lms/data/' + args.domain + '/lda_models/lda_dict')
@@ -115,9 +123,17 @@ with open(test_path, 'rb') as f:
 with open(vocab, 'rb') as f:
     vocab = pickle.load(f)
 
+with open(word_c, 'rb') as f:
+    word_counts = pickle.load(f)
+
 w2id = vocab
 idx2word = {v: k for k, v in w2id.items()}
 ntokens = len(vocab) + 1
+sorted_wc = sorted(word_counts.items(), key=operator.itemgetter(1))
+most_freq_words = 0.1 * len(word_counts) // 100
+sorted_wc = sorted_wc[0: len(sorted_wc) - most_freq_words]
+sorted_wc = [w for (w, c) in sorted_wc if c > 10.0]
+sorted_wc = [w2id[w] for w in sorted_wc if w not in stop_words]
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
@@ -137,6 +153,8 @@ if args.mit_topic:
     model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, topic_size=50)
 else:
     model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
+
+prod_lda =
 if args.cuda:
     model.cuda()
 total_params = sum(x.size()[0] * x.size()[1] if len(x.size()) > 1 else x.size()[0] for x in model.parameters())
@@ -338,7 +356,7 @@ def train():
             print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
                 epoch, b_n, len(train_data) // args.batch_size, optimizer.param_groups[0]['lr'],
-                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
+                elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)), lda_l)
             total_loss = 0
             start_time = time.time()
         ###
