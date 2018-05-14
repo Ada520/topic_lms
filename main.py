@@ -129,11 +129,11 @@ with open(word_c, 'rb') as f:
 w2id = vocab
 idx2word = {v: k for k, v in w2id.items()}
 ntokens = len(vocab) + 1
-sorted_wc = sorted(word_counts.items(), key=operator.itemgetter(1))
-most_freq_words = 0.1 * len(word_counts) // 100
-sorted_wc = sorted_wc[0: len(sorted_wc) - most_freq_words]
-sorted_wc = [w for (w, c) in sorted_wc if c > 10.0]
-sorted_wc = [w2id[w] for w in sorted_wc if w not in stop_words]
+# sorted_wc = sorted(word_counts.items(), key=operator.itemgetter(1))
+# most_freq_words = 0.1 * len(word_counts) // 100
+# sorted_wc = sorted_wc[0: len(sorted_wc) - most_freq_words]
+# sorted_wc = [w for (w, c) in sorted_wc if c > 10.0]
+# sorted_wc = [w2id[w] for w in sorted_wc if w not in stop_words]
 lda_model = models.LdaModel.load(lda_path)
 #load the lda dictionary
 lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
