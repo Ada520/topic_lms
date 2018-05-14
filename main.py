@@ -152,7 +152,9 @@ lda_dictionary = gensim.corpora.Dictionary.load(lda_dict_path)
 if args.mit_topic:
     model = model.RNNModel_mit_topic(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied, topic_size=50)
 else:
-    model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid, args.nlayers, args.dropout, args.dropouth, args.dropouti, args.dropoute, args.wdrop, args.tied)
+    model = model.RNNModel(rnn_type=args.model, ntoken=ntokens, ninp=args.emsize, nhid=args.nhid, nlayers=args.nlayers,
+                           dropout=args.dropout, dropouth=args.dropouth, dropouti=args.dropouti, dropoute=args.dropoute,
+                           wdrop=args.wdrop, tie_weights=args.tied)
 
 if args.cuda:
     model.cuda()
