@@ -111,7 +111,7 @@ def evaluate(data_source):
     #ntokens = len(corpus.dictionary)
     hidden = model.init_hidden(eval_batch_size)
     for i in range(0, data_source.size(0) - 1, args.bptt):
-        data, targets = get_batch(data_source, i, args, evaluation=True)
+        data, targets = get_batch(data_source, i, args)
         output, hidden = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data[0]
@@ -196,7 +196,7 @@ try:
                 prm.data = tmp[prm].clone()
 
         else:
-            val_loss = evaluate(val_data, eval_batch_size)
+            val_loss = evaluate(val_data)
             #print val_loss
             print('-' * 89)
             print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
@@ -216,7 +216,7 @@ try:
                 #optimizer.param_groups[0]['lr'] /= 2.
             best_val_loss.append(val_loss)
     # Run on test data.
-    test_loss = evaluate(test_data, eval_batch_size)
+    test_loss = evaluate(test_data)
     print('=' * 89)
     print('| End of training | test loss {:5.2f} | test ppl {:8.2f}'.format(
         test_loss, math.exp(test_loss)))
