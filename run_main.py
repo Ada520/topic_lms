@@ -5,20 +5,8 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
-import pickle
 import data
 import model
-import os
-from gensim import models
-import gensim
-import itertools
-from nltk.corpus import stopwords
-import operator
-#stop_words = set(stopwords.words('english'))
-with open('/data/dchaudhu/topic_lms/data/apnews/stopwords.txt', 'r') as f:
-    stop_words = f.readlines()
-stop_words = [stop.replace('\n','') for stop in stop_words]
 
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
@@ -123,7 +111,7 @@ def evaluate(data_source):
     #ntokens = len(corpus.dictionary)
     hidden = model.init_hidden(eval_batch_size)
     for i in range(0, data_source.size(0) - 1, args.bptt):
-        data, targets = get_batch(data_source, i)
+        data, targets = get_batch(data_source, i, args, evaluation=True)
         output, hidden = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data[0]
@@ -148,7 +136,7 @@ def train():
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
-        data, targets = get_batch(train_data, i) # data size SEQ X BATCH_SIZE, targets: SEQ X BATCH_SIZE, 1
+        data, targets = get_batch(train_data, i, args) # data size SEQ X BATCH_SIZE, targets: SEQ X BATCH_SIZE, 1
         output, hidden = model(data, hidden)
         raw_loss = criterion(output.view(-1, ntokens), targets)
         loss = raw_loss
