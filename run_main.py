@@ -85,9 +85,9 @@ corpus = data.Corpus(args.data)
 eval_batch_size = 64
 bsz = args.batch_size
 seq_len = args.bptt
-train_data = batchify(corpus.train, bsz, args)
-val_data = batchify(corpus.valid, eval_batch_size, args)
-test_data = batchify(corpus.test, eval_batch_size, args)
+train_data = batchify(corpus.train, args)
+val_data = batchify(corpus.valid, args)
+test_data = batchify(corpus.test, args)
 ntokens = len(corpus.dictionary) + 2
 print (ntokens)
 # Loss criterion
