@@ -99,6 +99,8 @@ else:
     model = model.RNNModel(rnn_type=args.model, ntoken=ntokens, ninp=args.emsize, nhid=args.nhid, nlayers=args.nlayers,
                            dropout=args.dropout, dropouth=args.dropouth, dropouti=args.dropouti, dropoute=args.dropoute,
                            wdrop=args.wdrop, tie_weights=args.tied)
+if args.cuda:
+    model.cuda()
 
 
 ###############################################################################
