@@ -114,7 +114,7 @@ def evaluate(data_source):
     hidden = model.init_hidden(eval_batch_size)
     for i in range(0, data_source.size(0) - 1, args.bptt):
         data, targets = get_batch(data_source, i, args)
-        output, hidden = model(data, hidden)
+        output = model(data, hidden)
         output_flat = output.view(-1, ntokens)
         total_loss += len(data) * criterion(output_flat, targets).data[0]
         hidden = repackage_hidden(hidden)
@@ -139,7 +139,7 @@ def train():
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         data, targets = get_batch(train_data, i, args) # data size SEQ X BATCH_SIZE, targets: SEQ X BATCH_SIZE, 1
-        output, hidden = model(data, hidden)
+        output, rnn_hs, dropped_rnn_hs = model(data, hidden, return_h=True)
         raw_loss = criterion(output.view(-1, ntokens), targets)
         loss = raw_loss
         loss = loss + sum(args.alpha * dropped_rnn_h.pow(2).mean() for dropped_rnn_h in dropped_rnn_hs[-1:])
