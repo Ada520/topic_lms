@@ -65,7 +65,7 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--nonmono', type=int, default=5,
                     help='random seed')
-parser.add_argument('--cuda', action='store_false', default=True,
+parser.add_argument('--cuda', action='store_false', default=False,
                     help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
@@ -95,9 +95,10 @@ if torch.cuda.is_available():
 # Get the dataset
 corpus = data.Corpus(args.data)
 eval_batch_size = 64
-train_data = batchify(corpus.train, args.batch_size)
-val_data = batchify(corpus.valid, eval_batch_size)
-test_data = batchify(corpus.test, eval_batch_size)
+bsz = args.batch_size
+train_data = batchify(corpus.train, bsz, args)
+val_data = batchify(corpus.valid, eval_batch_size, args)
+test_data = batchify(corpus.test, eval_batch_size, args)
 ntokens = len(corpus.dictionary) + 2
 print (ntokens)
 # Loss criterion
@@ -128,10 +129,10 @@ def evaluate(data_source):
         hidden = repackage_hidden(hidden)
     return total_loss / len(data_source)
 
+
 ###############################################################################
 # Training code
 ###############################################################################
-
 def train():
     # Turn on training mode which enables dropout.
     model.train()
@@ -170,6 +171,8 @@ def train():
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
+
+
 # Loop over epochs.
 lr = args.lr
 best_val_loss = []
