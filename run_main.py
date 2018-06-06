@@ -65,7 +65,7 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--nonmono', type=int, default=5,
                     help='random seed')
-parser.add_argument('--cuda', action='store_false', default=False,
+parser.add_argument('--cuda', action='store_true', default=True,
                     help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
@@ -96,6 +96,7 @@ if torch.cuda.is_available():
 corpus = data.Corpus(args.data)
 eval_batch_size = 64
 bsz = args.batch_size
+seq_len = args.bptt
 train_data = batchify(corpus.train, bsz, args)
 val_data = batchify(corpus.valid, eval_batch_size, args)
 test_data = batchify(corpus.test, eval_batch_size, args)
